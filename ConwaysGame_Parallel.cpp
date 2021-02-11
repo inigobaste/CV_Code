@@ -53,7 +53,6 @@ void do_iteration(void)
     nthrds = omp_get_num_threads();
 #pragma omp parallel
     {
-
         for (int i = ID; i < imax; i += nthrds)
             for (int j = 0; j < jmax; j++)
             {
@@ -81,31 +80,26 @@ int main(int argc, char *argv[])
     grid.resize(imax, vector<bool>(jmax));
     new_grid.resize(imax, vector<bool>(jmax));
 
-    //set an initial random collection of points - You could set an initial pattern
-    for (int i = 0; i < imax; i++)
-        for (int j = 0; j < jmax; j++)
-            grid[i][j] = (rand() % 2);
+    // Parallel initialisation
+    int nthrds;
+    int ID = omp_get_thread_num();
+    nthrds = omp_get_num_threads();
+#pragma omp parallel
+    {
+        //set an initial random collection of points - You could set an initial pattern
+        for (int i = 0; i < imax; i += nthrds)
+            for (int j = 0; j < jmax; j++)
+                grid[i][j] = (rand() % 2);
+    }
 
-    // Parallelising
-    // int nthreads;
-    // omp_set_num_threads(num_threads);
-    // #pragma omp parallel
-    //     {
-    //         int nthrds;
-    //         int ID = omp_get_thread_num();
-    //         nthrds = omp_get_num_threads();
-
-    //         //Check that you are in the correct thread
-    //         if (ID == 0)
-    //             nthreads = nthrds;
-
+    // vector<vector<vector<bool>>> grids_print;
     for (int n = 0; n < max_steps; n++)
     {
         cout << "it: " << n << endl;
         do_iteration();
+
         grid_to_file(n);
     }
-    // }
 
     return 0;
 }
