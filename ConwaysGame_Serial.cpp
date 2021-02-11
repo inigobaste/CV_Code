@@ -10,7 +10,7 @@ using namespace std;
 //Note that this is a serial implementation with a periodic grid
 vector<vector<bool>> grid, new_grid;
 int imax, jmax;
-int max_steps = 100;
+int max_steps = 5;
 
 int num_neighbours(int ii, int jj)
 {
@@ -18,8 +18,12 @@ int num_neighbours(int ii, int jj)
     int cnt = 0;
     for (int i = -1; i <= 1; i++)
         for (int j = -1; j <= 1; j++)
-            if (i != 0 || j != 0)
+            //from mxn grid to (m-1)x(n-1)
+            if (i != 0 || j != 0) // shouldn't count itself as a neighbor
             {
+                // imax and jmax are the grid sizes
+                // (ii, jj) is the current cell's coordinates
+                // i & j look at the neighbors of (ii, jj)
                 ix = (i + ii + imax) % imax;
                 jx = (j + jj + jmax) % jmax;
                 if (grid[ix][jx])
@@ -65,8 +69,8 @@ void do_iteration(void)
 int main(int argc, char *argv[])
 {
     srand(time(NULL));
-    imax = 100;
-    jmax = 100;
+    imax = 8;
+    jmax = 8;
     grid.resize(imax, vector<bool>(jmax));
     new_grid.resize(imax, vector<bool>(jmax));
 
