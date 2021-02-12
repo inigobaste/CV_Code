@@ -6,7 +6,6 @@
 #include <vector>
 #include <omp.h>
 #include <string>
-// #include <memory>
 
 using namespace std;
 
@@ -50,13 +49,7 @@ void grid_to_file(int it)
 
 void do_iteration()
 {
-    // cout << "Hi\n";
-    int nthrds;
-// int ID = omp_get_thread_num();
 
-// omp_set_num_threads(4);
-// cout << "Hi\n";
-// cout << "ID: " << ID << endl;
 #pragma omp parallel for
     for (int i = 0; i < grid.size(); i++)
     {
@@ -64,21 +57,13 @@ void do_iteration()
     }
 
 #pragma omp parallel for
-    // ID = omp_get_thread_num();
-    // cout << "ID: " << ID << endl;
 
-    // nthrds = omp_get_num_threads();
-    // cout << "nthrds: " << nthrds << endl;
     for (int i = 0; i < imax; i++)
     {
-        // nthrds = omp_get_num_threads();
-        // cout << "nthreads = " << nthrds << endl;
-        // cout << "i = " << i << endl;
-        // cout << "i = " << i + nthrds << endl;
+
         for (int j = 0; j < jmax; j++)
         {
-            // cout << "j = " << j << endl;
-            // new_grid.push_back(grid[i * imax + j]);
+
             int num_n = num_neighbours(i, j);
             if (grid[i * imax + j])
             {
@@ -124,25 +109,17 @@ int main(int argc, char *argv[])
         new_grid.clear();
         imax = dim;
         jmax = dim;
-        // grid.reset(new bool[imax * jmax]);
-        // new_grid.reset(new bool[imax * jmax]);
+
         start_time = omp_get_wtime();
         srand(time(NULL));
-        // grid.resize(imax, vector<bool>(jmax));
-        // new_grid.resize(imax, vector<bool>(jmax));
 
         // Parallel initialisation
-        //         int nthrds;
-        //         int ID = omp_get_thread_num();
-        //         nthrds = omp_get_num_threads();
-        // #pragma omp parallel
-        //         {
         //set an initial random collection of points - You could set an initial pattern
         grid.resize(imax * jmax);
 #pragma omp parallel for
         for (int i = 0; i < grid.size(); i++)
             grid[i] = (rand() % 2);
-        // }
+
         new_grid.resize(grid.size());
 
         cout << "size: " << grid.size() << endl;
