@@ -6,10 +6,8 @@
 
 using namespace std;
 
-void writeGridImageFile(const std::vector<std::vector<bool>> &grid, std::string filename)
+void writeGridImageFile(const std::vector<bool> &grid, std::string filename, int w, int h)
 {
-    int w = grid.size();
-    int h = grid[0].size();
     FILE *f;
     unsigned char *img = new unsigned char[3 * w * h];
     // std::unique_ptr<unsigned char[]> img = std::unique_ptr<unsigned char[]>(new unsigned char[3 * w * h]);
@@ -28,7 +26,7 @@ void writeGridImageFile(const std::vector<std::vector<bool>> &grid, std::string 
             int g = rand_grey;
             int b = rand_grey;
 
-            if (grid[i][j])
+            if (grid[i * w + j])
             {
                 r = rand() % 55 + 200; // random red
                 g = 0;

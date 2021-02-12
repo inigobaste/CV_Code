@@ -5,6 +5,7 @@
 #include <time.h>
 #include <vector>
 #include <omp.h>
+#include "FileWriter.h"
 
 using namespace std;
 
@@ -116,6 +117,8 @@ int main(int argc, char *argv[])
         run_time = omp_get_wtime() - start_time;
         time_data_to_file(max_steps, imax, run_time);
     }
+
+    writeGridImageFile(grid, "parallel_grid.bmp", jmax, imax);
 
     return 0;
 }
