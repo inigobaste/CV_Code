@@ -5,14 +5,16 @@
 #include <time.h>
 #include <vector>
 #include <omp.h>
+#include <string>
+// #include <memory>
 
 using namespace std;
 
 //Note that this is a serial implementation with a periodic grid
-vector<vector<bool>> grid, new_grid;
+vector<bool> grid, new_grid;
 int counter = 0;
 int imax, jmax;
-int max_steps = 5;
+int max_steps = 1;
 
 int num_neighbours(int ii, int jj)
 {
@@ -24,7 +26,7 @@ int num_neighbours(int ii, int jj)
             {
                 ix = (i + ii + imax) % imax;
                 jx = (j + jj + jmax) % jmax;
-                if (grid[ix][jx])
+                if (grid[ix * imax + jx])
                     cnt++;
             }
     return cnt;
@@ -40,65 +42,122 @@ void grid_to_file(int it)
     for (int i = 0; i < imax; i++)
     {
         for (int j = 0; j < jmax; j++)
-            f1 << grid[i][j] << "\t";
+            f1 << grid[i * imax + j] << "\t";
         f1 << endl;
     }
     f1.close();
 }
 
-void do_iteration(void)
+void do_iteration()
 {
+    // cout << "Hi\n";
     int nthrds;
-    int ID = omp_get_thread_num();
-    nthrds = omp_get_num_threads();
-#pragma omp parallel
+// int ID = omp_get_thread_num();
+
+// omp_set_num_threads(4);
+// cout << "Hi\n";
+// cout << "ID: " << ID << endl;
+#pragma omp parallel for
+    for (int i = 0; i < grid.size(); i++)
     {
-        for (int i = ID; i < imax; i += nthrds)
-            for (int j = 0; j < jmax; j++)
-            {
-                new_grid[i][j] = grid[i][j];
-                int num_n = num_neighbours(i, j);
-                if (grid[i][j])
-                {
-                    if (num_n != 2 && num_n != 3)
-                        new_grid[i][j] = false;
-                }
-                else if (num_n == 3)
-                    new_grid[i][j] = true;
-            }
+        new_grid[i] = grid[i];
     }
+
+#pragma omp parallel for
+    // ID = omp_get_thread_num();
+    // cout << "ID: " << ID << endl;
+
+    // nthrds = omp_get_num_threads();
+    // cout << "nthrds: " << nthrds << endl;
+    for (int i = 0; i < imax; i++)
+    {
+        // nthrds = omp_get_num_threads();
+        // cout << "nthreads = " << nthrds << endl;
+        // cout << "i = " << i << endl;
+        // cout << "i = " << i + nthrds << endl;
+        for (int j = 0; j < jmax; j++)
+        {
+            // cout << "j = " << j << endl;
+            // new_grid.push_back(grid[i * imax + j]);
+            int num_n = num_neighbours(i, j);
+            if (grid[i * imax + j])
+            {
+                if (num_n != 2 && num_n != 3)
+                    new_grid[i * imax + j] = false;
+            }
+            else if (num_n == 3)
+                new_grid[i * imax + j] = true;
+        }
+    }
+
     // threading ends here
     grid.swap(new_grid);
 }
 
-int num_threads = 4;
-int main(int argc, char *argv[])
+void time_data_to_file(int steps, int size, double time)
 {
-    srand(time(NULL));
-    imax = 8;
-    jmax = 8;
-    grid.resize(imax, vector<bool>(jmax));
-    new_grid.resize(imax, vector<bool>(jmax));
+    string fname = "time_data.dat";
+    ofstream f1;
+    f1.open(fname, std::ofstream::app);
 
-    // Parallel initialisation
-    int nthrds;
-    int ID = omp_get_thread_num();
-    nthrds = omp_get_num_threads();
-#pragma omp parallel
+    if (f1.is_open())
     {
-        //set an initial random collection of points - You could set an initial pattern
-        for (int i = 0; i < imax; i += nthrds)
-            for (int j = 0; j < jmax; j++)
-                grid[i][j] = (rand() % 2);
+        f1 << size << "\t" << steps << "\t" << time;
+        f1 << endl;
     }
 
-    // vector<vector<vector<bool>>> grids_print;
-    for (int n = 0; n < max_steps; n++)
-    {
-        cout << "it: " << n << endl;
-        do_iteration();
+    f1.close();
+}
 
-        grid_to_file(n);
+int num_threads = 10;
+double run_time, start_time;
+int main(int argc, char *argv[])
+{
+    ofstream ofs;
+    ofs.open("time_data.dat", std::ofstream::trunc);
+    ofs.close();
+    vector<int> dims{10, 20, 100, 500, 1000, 5000, 10000};
+    cout << dims.size() << endl;
+    for (int dim : dims)
+    {
+        grid.clear();
+        new_grid.clear();
+        imax = dim;
+        jmax = dim;
+        // grid.reset(new bool[imax * jmax]);
+        // new_grid.reset(new bool[imax * jmax]);
+        start_time = omp_get_wtime();
+        srand(time(NULL));
+        // grid.resize(imax, vector<bool>(jmax));
+        // new_grid.resize(imax, vector<bool>(jmax));
+
+        // Parallel initialisation
+        //         int nthrds;
+        //         int ID = omp_get_thread_num();
+        //         nthrds = omp_get_num_threads();
+        // #pragma omp parallel
+        //         {
+        //set an initial random collection of points - You could set an initial pattern
+        grid.resize(imax * jmax);
+#pragma omp parallel for
+        for (int i = 0; i < grid.size(); i++)
+            grid[i] = (rand() % 2);
+        // }
+        new_grid.resize(grid.size());
+
+        cout << "size: " << grid.size() << endl;
+        cout << "imax: " << imax << endl;
+
+        for (int n = 0; n < max_steps; n++)
+        {
+            cout << "it: " << n << "k: " << dim << endl;
+            do_iteration();
+            cout << "write to file\n";
+            grid_to_file(n);
+        }
+
+        run_time = omp_get_wtime() - start_time;
+        time_data_to_file(max_steps, imax, run_time);
     }
 
     return 0;
