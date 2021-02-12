@@ -6,12 +6,16 @@ class Grid
 private:
     int nrows = -1;
     int ncols = -1;
+    bool parallel = true;
 
     std::vector<bool> cells;
     std::vector<bool> new_cells;
 
+    void do_iteration_parallel();
+    void do_iteration_serial();
+
 public:
-    Grid(const int &num_rows, const int &num_cols);
+    Grid(const int &num_rows, const int &num_cols, bool is_parallel = true);
     ~Grid();
     int num_neighbours(const int &ii, const int &jj);
     void to_file(const int &it);

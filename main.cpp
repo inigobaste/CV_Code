@@ -10,7 +10,7 @@
 
 using namespace std;
 
-int num_threads = 10;
+int num_threads = 4;
 double run_time, start_time;
 int max_steps = 1;
 
@@ -20,13 +20,13 @@ int main()
     ofs.open("time_data.dat", std::ofstream::trunc);
     ofs.close();
 
-    vector<int> dims{10, 20, 100, 500}; // 1000, 5000, 10000
+    vector<int> dims{10, 20, 100, 500, 1000, 5000};
 
     for (int dim : dims)
     {
         cout << "Dimension: " << dim << endl;
         // create a random grid
-        Grid grid = Grid(dim, dim);
+        Grid grid = Grid(dim, dim, true);
 
         start_time = omp_get_wtime();
         srand(time(NULL));

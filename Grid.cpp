@@ -7,16 +7,25 @@
 #include <fstream>
 
 // random grid constructor
-Grid::Grid(const int &num_rows, const int &num_cols) : nrows(num_rows), ncols(num_cols)
+// default is parallel
+Grid::Grid(const int &num_rows, const int &num_cols, bool is_parallel) : nrows(num_rows), ncols(num_cols), parallel(is_parallel)
 {
     int size = num_rows * num_cols;
     // reserve size so vector doesn't have to auto-resize
     this->cells.reserve(size);
     this->new_cells.reserve(size);
 
+    if (is_parallel)
+    {
 #pragma omp parallel for
-    for (int i = 0; i < size; i++)
-        this->cells[i] = (rand() % 2);
+        for (int i = 0; i < size; i++)
+            this->cells[i] = (rand() % 2);
+    }
+    else
+    {
+        for (int i = 0; i < size; i++)
+            this->cells[i] = (rand() % 2);
+    }
 }
 
 Grid::~Grid()
@@ -58,7 +67,7 @@ void Grid::to_file(const int &it)
     f1.close();
 }
 
-void Grid::do_iteration()
+void Grid::do_iteration_parallel()
 {
 
 #pragma omp parallel for
@@ -68,14 +77,13 @@ void Grid::do_iteration()
     }
 
 #pragma omp parallel for
-
     for (int i = 0; i < this->nrows; i++)
     {
 
         for (int j = 0; j < this->ncols; j++)
         {
 
-            int num_n = num_neighbours(i, j);
+            int num_n = this->num_neighbours(i, j);
             if (this->cells[i * this->ncols + j])
             {
                 if (num_n != 2 && num_n != 3)
@@ -88,6 +96,46 @@ void Grid::do_iteration()
 
     // threading ends here
     this->cells.swap(this->new_cells);
+}
+
+void Grid::do_iteration_serial()
+{
+    for (int i = 0; i < this->cells.size(); i++)
+    {
+        this->new_cells[i] = this->cells[i];
+    }
+
+    for (int i = 0; i < this->nrows; i++)
+    {
+
+        for (int j = 0; j < this->ncols; j++)
+        {
+
+            int num_n = this->num_neighbours(i, j);
+            if (this->cells[i * this->ncols + j])
+            {
+                if (num_n != 2 && num_n != 3)
+                    this->new_cells[i * this->ncols + j] = false;
+            }
+            else if (num_n == 3)
+                this->new_cells[i * this->ncols + j] = true;
+        }
+    }
+
+    // threading ends here
+    this->cells.swap(this->new_cells);
+}
+
+void Grid::do_iteration()
+{
+    if (this->parallel)
+    {
+        this->do_iteration_parallel();
+    }
+    else
+    {
+        this->do_iteration_serial();
+    };
 }
 
 void Grid::time_data_to_file(const int &steps, const int &size, const double &time)
