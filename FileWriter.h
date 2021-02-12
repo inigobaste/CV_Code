@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void writeGridImageFile(std::vector<std::vector<bool>> grid)
+void writeGridImageFile(const std::vector<std::vector<bool>> &grid, std::string filename)
 {
     int w = grid.size();
     int h = grid[0].size();
@@ -22,24 +22,25 @@ void writeGridImageFile(std::vector<std::vector<bool>> grid)
         {
             int x = i;
             int y = (h - 1) - j;
-            int r;
+
+            int rand_grey = rand() % 20 + 230;
+            int r = rand_grey;
+            int g = rand_grey;
+            int b = rand_grey;
 
             if (grid[i][j])
             {
-                r = 255;
+                r = rand() % 55 + 200; // random red
+                g = 0;
+                b = 0;
             }
-            else
-            {
-                r = 0;
-            }
-            int g = 0;
-            int b = 255;
 
             img[(x + y * w) * 3 + 2] = (unsigned char)(r);
             img[(x + y * w) * 3 + 1] = (unsigned char)(g);
             img[(x + y * w) * 3 + 0] = (unsigned char)(b);
         }
     }
+
     // 14 bytes in total (14 unsigned chars)
     unsigned char bmpfileheader[14] = {
         'B', 'M',   // signature
@@ -47,6 +48,7 @@ void writeGridImageFile(std::vector<std::vector<bool>> grid)
         0, 0, 0, 0,
         54, 0, 0, 0 // offset
     };
+
     unsigned char bmpinfoheader[40] = {
         40, 0, 0, 0,  // size
         0, 0, 0, 0,   // width
@@ -74,7 +76,7 @@ void writeGridImageFile(std::vector<std::vector<bool>> grid)
     bmpinfoheader[10] = (unsigned char)(h >> 16);
     bmpinfoheader[11] = (unsigned char)(h >> 24);
 
-    f = fopen("img.bmp", "wb");
+    f = fopen(filename.c_str(), "wb");
     fwrite(bmpfileheader, 1, 14, f);
     fwrite(bmpinfoheader, 1, 40, f);
     for (int i = 0; i < h; i++)
