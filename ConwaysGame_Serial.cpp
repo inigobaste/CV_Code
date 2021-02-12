@@ -4,13 +4,14 @@
 #include <cstdlib>
 #include <time.h>
 #include <vector>
+#include <omp.h>
 
 using namespace std;
 
 //Note that this is a serial implementation with a periodic grid
-vector<vector<bool>> grid, new_grid;
+vector<bool> grid, new_grid;
 int imax, jmax;
-int max_steps = 5;
+int max_steps = 1;
 
 int num_neighbours(int ii, int jj)
 {
@@ -26,7 +27,7 @@ int num_neighbours(int ii, int jj)
                 // i & j look at the neighbors of (ii, jj)
                 ix = (i + ii + imax) % imax;
                 jx = (j + jj + jmax) % jmax;
-                if (grid[ix][jx])
+                if (grid[ix * jmax + jx])
                     cnt++;
             }
     return cnt;
@@ -42,7 +43,7 @@ void grid_to_file(int it)
     for (int i = 0; i < imax; i++)
     {
         for (int j = 0; j < jmax; j++)
-            f1 << grid[i][j] << "\t";
+            f1 << grid[i * jmax + j] << "\t";
         f1 << endl;
     }
     f1.close();
@@ -50,40 +51,70 @@ void grid_to_file(int it)
 
 void do_iteration(void)
 {
+    for (int i = 0; i < grid.size(); i++)
+    {
+        new_grid.push_back(grid[i]);
+    }
     for (int i = 0; i < imax; i++)
         for (int j = 0; j < jmax; j++)
         {
-            new_grid[i][j] = grid[i][j];
+
             int num_n = num_neighbours(i, j);
-            if (grid[i][j])
+            if (grid[i * jmax + j])
             {
                 if (num_n != 2 && num_n != 3)
-                    new_grid[i][j] = false;
+                    new_grid[i * jmax + j] = false;
             }
             else if (num_n == 3)
-                new_grid[i][j] = true;
+                new_grid[i * jmax + j] = true;
         }
     grid.swap(new_grid);
 }
 
+void time_data_to_file(int steps, int size, double time)
+{
+    string fname = "time_data_serial.dat";
+    ofstream f1;
+    f1.open(fname, std::ofstream::app);
+
+    if (f1.is_open())
+    {
+        f1 << size << "\t" << steps << "\t" << time;
+        f1 << endl;
+    }
+
+    f1.close();
+}
+
+double run_time, start_time;
 int main(int argc, char *argv[])
 {
-    srand(time(NULL));
-    imax = 8;
-    jmax = 8;
-    grid.resize(imax, vector<bool>(jmax));
-    new_grid.resize(imax, vector<bool>(jmax));
-
-    //set an initial random collection of points - You could set an initial pattern
-    for (int i = 0; i < imax; i++)
-        for (int j = 0; j < jmax; j++)
-            grid[i][j] = (rand() % 2);
-
-    for (int n = 0; n < max_steps; n++)
+    ofstream ofs;
+    ofs.open("time_data_serial.dat", std::ofstream::trunc);
+    ofs.close();
+    vector<int> dims{4, 10, 20, 100, 1000, 5000, 10000};
+    for (int dim : dims)
     {
-        cout << "it: " << n << endl;
-        do_iteration();
-        grid_to_file(n);
+        grid.clear();
+        new_grid.clear();
+        srand(time(NULL));
+        imax = dim;
+        jmax = dim;
+        start_time = omp_get_wtime();
+
+        //set an initial random collection of points - You could set an initial pattern
+        for (int i = 0; i < imax; i++)
+            for (int j = 0; j < jmax; j++)
+                grid.push_back(rand() % 2);
+
+        for (int n = 0; n < max_steps; n++)
+        {
+            cout << "it: " << n << endl;
+            do_iteration();
+            grid_to_file(n);
+        }
+        run_time = omp_get_wtime() - start_time;
+        time_data_to_file(max_steps, imax, run_time);
     }
 
     return 0;
