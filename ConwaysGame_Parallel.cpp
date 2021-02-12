@@ -25,7 +25,7 @@ int num_neighbours(int ii, int jj)
             {
                 ix = (i + ii + imax) % imax;
                 jx = (j + jj + jmax) % jmax;
-                if (grid[ix * imax + jx])
+                if (grid[ix * jmax + jx])
                     cnt++;
             }
     return cnt;
@@ -41,7 +41,7 @@ void grid_to_file(int it)
     for (int i = 0; i < imax; i++)
     {
         for (int j = 0; j < jmax; j++)
-            f1 << grid[i * imax + j] << "\t";
+            f1 << grid[i * jmax + j] << "\t";
         f1 << endl;
     }
     f1.close();
@@ -65,13 +65,13 @@ void do_iteration()
         {
 
             int num_n = num_neighbours(i, j);
-            if (grid[i * imax + j])
+            if (grid[i * jmax + j])
             {
                 if (num_n != 2 && num_n != 3)
-                    new_grid[i * imax + j] = false;
+                    new_grid[i * jmax + j] = false;
             }
             else if (num_n == 3)
-                new_grid[i * imax + j] = true;
+                new_grid[i * jmax + j] = true;
         }
     }
 
