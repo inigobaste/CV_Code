@@ -1,4 +1,6 @@
 #include <vector>
+#include <memory>
+#include <COOGrid.h>
 
 // A grid in Conway's Game of Life
 class Grid
@@ -13,6 +15,7 @@ private:
 
     void do_iteration_parallel();
     void do_iteration_serial();
+    std::shared_ptr<COOGrid> dense_to_COO();
 
 public:
     Grid(const int &num_rows, const int &num_cols, bool is_parallel = true);

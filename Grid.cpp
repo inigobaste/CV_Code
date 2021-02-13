@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <memory>
 
 // random grid constructor
 // default is parallel
@@ -151,4 +152,24 @@ void Grid::time_data_to_file(const int &steps, const int &size, const double &ti
     }
 
     f1.close();
+}
+
+// convert to sparse storage system
+std::shared_ptr<COOGrid> Grid::dense_to_COO()
+{
+    std::vector<int> x_coo{};
+    std::vector<int> y_coo{};
+
+    for (int i = 0; i < this->nrows; i++)
+    {
+        for (int j = 0; j < this->ncols; j++)
+        {
+            if (this->cells[i * this->ncols + j]) // check for nnz entries
+            {
+                x_coo.push_back(i); // <bool>NOTE: might just make a pair<int> (x, y)
+                y_coo.push_back(j); // since the sizes are equal
+            }
+        }
+    }
+    return std::make_shared<COOGrid>(this->nrows, this->ncols, x_coo, y_coo);
 }
