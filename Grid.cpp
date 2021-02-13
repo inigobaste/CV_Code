@@ -140,7 +140,7 @@ void Grid::do_iteration()
 
 void Grid::time_data_to_file(const int &steps, const int &size, const double &time)
 {
-    std::string fname = "time_data.dat";
+    std::string fname = this->parallel ? "parallel_time_data.dat" : "serial_time_data.dat";
     std::ofstream f1;
     f1.open(fname, std::ofstream::app);
 
