@@ -135,6 +135,7 @@ int main()
 
 
     // Dense to COO conversion
+        // 
     int grid_T2[5][5] = {{0, 0, 0, 0, 0},{0, 1, 0, 0, 0},{0, 1, 1, 1, 0},{0, 0, 0, 0, 0},{0, 0, 0, 0, 0}};
 
     std::vector<int> x_coo; // store nnz coordinates
@@ -152,6 +153,7 @@ int main()
 
     std::map<std::pair<int, int>, int> deathMap;
 
+    
     for (int i = 0; i < 5; i++)
     {
         for (int j = 0; j < 5; j++)
@@ -186,6 +188,15 @@ int main()
             }   // look at "pair", counting in "unordered map"
         }
     }
+
+    //////// Unimportant
+    std::cout << "\nAlive cell coordinates :\n";
+    for (int i = 0; i < nnzs; i++)
+    {
+        std::cout << "(" << x_coo[i] << ", " << y_coo[i] << ")\n";
+    }
+    ////////////////////
+
 
     for (auto itr = indexMap.begin(); itr != indexMap.end(); itr++)
     {
@@ -233,6 +244,111 @@ int main()
         jk++;
     } 
 
-    //std::cout << indexMap[(0,1)];
+    std::map<std::pair<int, int>, int> deathMap2;
+    
+    //////////////////////////
+    // COULD BE ITS OWN FXN // // Version for ONLY 1 Storage Map
+    //////////////////////////
+    int itr_int = 0;
+    for (auto itr = deathMap.begin(); itr != deathMap.end();) 
+    {
+        if ((itr->second < 3) || (itr->second > 4))  //Rule 1 implemented, Rule No 2 --> || (!(() && () && ()))
+        {
+            //deathMap.erase(make_pair(itr->first.first, itr->first.second));
+            //itr = deathMap[itr->first];
+            
+            deathMap.erase(itr);
+            //itr = deathMap.end();
+            itr--;
+            itr_int--;
+
+            if (itr_int < 0) // this is for satisfying the edge case 
+            {                // where we have many (chain) entries which have value < 3
+                itr = deathMap.begin(); 
+                itr_int = 0;
+            }
+
+            //deathMap2.insert(make_pair(itr->first.first, itr->first.second),itr->second); 
+            // 0,0 index fucked    
+        }
+        else if (itr->second == 4) // Rule 2
+        {
+            int i = 0;
+            bool survivor = false; // look if 4 times repeated coord was alive previously
+            bool s1 = false;
+            bool s2 = false;
+            while ((i < nnzs) && !(survivor == false)) // check if survivor
+            {
+                s1 = (itr->first.first == x_coo[i]);
+                s2 = (itr->first.second == y_coo[i]);
+
+                std::cout << "s1 = " << s1 << ",  s2 = " << s2 << ",  survivor = " << survivor << "\n";
+
+                survivor = (s1 && s2);
+                i++;
+            }
+
+            survivor = survivor;
+
+            if (survivor == false)
+            {
+                deathMap.erase(itr);
+                itr--;
+                itr_int--;
+
+                if (itr_int < 0) 
+                {               
+                    itr = deathMap.begin(); 
+                    itr_int = 0;
+                }
+            }
+        }
+        else
+        {
+            itr++;
+            itr_int++;
+        }
+        
+        //itr++;
+    } 
+
+    std::cout << "\nMap Size = " << deathMap.size();
+
+    //deathMap.erase(make_pair(0,1));
+
+    std::cout << "\nUpdated:\n";
+    jk = 0;
+    for (auto itr = deathMap.begin(); itr != deathMap.end(); itr++) { 
+        std::cout << "(" << itr->first.first << ", " << itr->first.second << ") = " << itr->second << "   " << jk << '\n'; 
+        jk++;
+    } 
+
+
+
+    //vector<int> x_temp(x_coo.begin(), x_coo.end());
+    //vector<int> y_temp(y_coo.begin(), y_coo.end());
+
+    vector<int> *x_temp = new vector<int>;
+    vector<int> *y_temp = new vector<int>;
+
+    std:cout << !(1==1) << "\n";
+
+    *x_temp = x_coo;
+    *y_temp = y_coo;
+
+    for (int i = 0; i < 4; i++)
+    {
+        std::cout << (*x_temp)[i] << " " << (*y_temp)[i] << "\n";
+    }
+
+    delete[] x_temp;
+    delete[] y_temp;
+
+    for (int i = 0; i < 4; i++)
+    {
+        std::cout << (*x_temp)[i] << " " << (*y_temp)[i] << "\n";
+    }
+
+
 
 }
