@@ -1,4 +1,6 @@
 #include <vector>
+#include <memory>
+#include "COOGrid.h"
 
 // A grid in Conway's Game of Life
 class Grid
@@ -21,4 +23,5 @@ public:
     void to_file(const int &it);
     void do_iteration();
     void time_data_to_file(const int &steps, const int &size, const double &time);
+    std::shared_ptr<COOGrid> dense_to_COO();
 };
