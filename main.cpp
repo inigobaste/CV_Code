@@ -19,13 +19,14 @@ int main()
     ofs.open("time_data.dat", std::ofstream::trunc);
     ofs.close();
 
-    vector<int> dims{10, 20, 100, 500, 1000, 5000};
+    vector<int> dims{10, 20, 100}; //, 500, 1000, 5000
 
     for (int dim : dims)
     {
         cout << "Dimension: " << dim << endl;
         // create a random grid
         Grid grid = Grid(dim, dim, true);
+        std::shared_ptr<COOGrid> sparse_grid = grid.dense_to_COO();
 
         start_time = omp_get_wtime();
         srand(time(NULL));
@@ -34,6 +35,7 @@ int main()
         {
             grid.do_iteration();
             grid.to_file(n);
+            sparse_grid->do_iteration();
         }
 
         run_time = omp_get_wtime() - start_time;
