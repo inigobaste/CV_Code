@@ -10,7 +10,6 @@
 
 using namespace std;
 
-int num_threads = 4;
 double run_time, start_time;
 int max_steps = 1;
 
