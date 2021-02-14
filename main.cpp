@@ -32,7 +32,13 @@ int main()
 
         for (int n = 0; n < max_steps; n++)
         {
-            grid.do_iteration();
+            bool isSteadyState = grid.do_iteration();
+            if (isSteadyState)
+            {
+                std::cout << "Steady state was reached." << std::endl;
+                break;
+            }
+
             grid.to_file(n);
         }
 

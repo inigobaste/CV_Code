@@ -69,7 +69,8 @@ void Grid::to_file(const int &it)
     f1.close();
 }
 
-void Grid::do_iteration_parallel()
+// return value indicates whether the game has reached steady state
+bool Grid::do_iteration_parallel()
 {
 
 #pragma omp parallel for
@@ -98,9 +99,24 @@ void Grid::do_iteration_parallel()
 
     // threading ends here
     this->cells.swap(this->new_cells);
+
+    // return true if the iteration has reached steady state
+    if (this->cells.size() != this->new_cells.size())
+    {
+        return false;
+    }
+    // #pragma omp parallel for
+    for (int i = 0; i < this->nrows * this->ncols; i++)
+    {
+        if (this->cells[i] != this->new_cells[i])
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
-void Grid::do_iteration_serial()
+bool Grid::do_iteration_serial()
 {
     for (int i = 0; i < this->cells.size(); i++)
     {
@@ -126,17 +142,32 @@ void Grid::do_iteration_serial()
 
     // threading ends here
     this->cells.swap(this->new_cells);
+
+    // return true if the iteration has reached steady state
+    if (this->cells.size() != this->new_cells.size())
+    {
+        return false;
+    }
+
+    for (int i = 0; i < this->nrows * this->ncols; i++)
+    {
+        if (this->cells[i] != this->new_cells[i])
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
-void Grid::do_iteration()
+bool Grid::do_iteration()
 {
     if (this->parallel)
     {
-        this->do_iteration_parallel();
+        return this->do_iteration_parallel();
     }
     else
     {
-        this->do_iteration_serial();
+        return this->do_iteration_serial();
     };
 }
 

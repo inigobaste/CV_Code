@@ -13,15 +13,15 @@ private:
     std::vector<bool> cells;
     std::vector<bool> new_cells;
 
-    void do_iteration_parallel();
-    void do_iteration_serial();
+    bool do_iteration_parallel();
+    bool do_iteration_serial();
 
 public:
     Grid(const int &num_rows, const int &num_cols, bool is_parallel = true);
     ~Grid();
     int num_neighbours(const int &ii, const int &jj);
     void to_file(const int &it);
-    void do_iteration();
+    bool do_iteration();
     void time_data_to_file(const int &steps, const int &size, const double &time);
     std::shared_ptr<COOGrid> dense_to_COO();
 };
