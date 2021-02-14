@@ -26,16 +26,20 @@ int main()
         cout << "Dimension: " << dim << endl;
         // create a random grid
         Grid grid = Grid(dim, dim, true);
-        std::shared_ptr<COOGrid> sparse_grid = grid.dense_to_COO();
 
         start_time = omp_get_wtime();
         srand(time(NULL));
 
         for (int n = 0; n < max_steps; n++)
         {
-            grid.do_iteration();
+            bool isSteadyState = grid.do_iteration();
+            if (isSteadyState)
+            {
+                std::cout << "Steady state was reached." << std::endl;
+                break;
+            }
+
             grid.to_file(n);
-            sparse_grid->do_iteration();
         }
 
         run_time = omp_get_wtime() - start_time;
