@@ -1,4 +1,5 @@
 #include "Grid.h"
+#include "COOGrid.h"
 #include <omp.h>
 #include <vector>
 #include <cstdlib>
@@ -6,6 +7,7 @@
 #include <sstream>
 #include <fstream>
 #include <memory>
+#include <time.h>
 #include <utility>
 #include <locale>
 
@@ -21,8 +23,9 @@ Grid::Grid(const int &num_rows, const int &num_cols, bool is_parallel) : nrows(n
     this->new_data.resize(stringSize);
 
     // reserve size so vector doesn't have to auto-resize
-    this->cells.reserve(size);
-    this->new_cells.reserve(size);
+    this->cells.resize(size);
+    this->new_cells.resize(size);
+    srand(time(NULL));
 
     if (is_parallel)
     {
@@ -212,6 +215,7 @@ void Grid::time_data_to_file(const int &steps, const int &size, const double &ti
     std::string fname = this->parallel ? "parallel_time_data.dat" : "serial_time_data.dat";
     std::ofstream f1;
     f1.open(fname, std::ofstream::app);
+    // std::cout << "Open = " << f1.is_open() << "\n";
 
     if (f1.is_open())
     {
@@ -233,7 +237,7 @@ std::shared_ptr<COOGrid> Grid::dense_to_COO()
         {
             if (this->cells[i * this->ncols + j]) // check for nnz entries
             {
-                std::cout << i << j << std::endl;
+                // std::cout << i << j << std::endl;
                 coords.push_back(std::make_pair(i, j));
             }
         }

@@ -1,5 +1,7 @@
+#pragma once
 #include <vector>
 #include <memory>
+class COOGrid;
 #include "COOGrid.h"
 #include <string>
 
@@ -14,13 +16,12 @@ private:
     std::string data = "";
     std::string new_data = "";
 
-    std::vector<bool> new_cells;
-
     bool do_iteration_parallel();
     bool do_iteration_serial();
 
 public:
     std::vector<bool> cells;
+    std::vector<bool> new_cells;
 
     Grid(const int &num_rows, const int &num_cols, bool is_parallel = true);
     Grid(const int &num_rows, const int &num_cols, std::vector<bool> &cell_states, bool is_parallel = true);
