@@ -87,13 +87,18 @@ bool Grid::do_iteration_parallel()
         {
 
             int num_n = this->num_neighbours(i, j);
-            if (this->cells[i * this->ncols + j])
+            bool condition1 = this->cells[i * this->ncols + j] && num_n != 2 && num_n != 3;
+            bool condition2 = !this->cells[i * this->ncols + j] && num_n == 3;
+            if (condition1 || condition2)
             {
-                if (num_n != 2 && num_n != 3)
-                    this->new_cells[i * this->ncols + j] = false;
-            }
-            else if (num_n == 3)
+
                 this->new_cells[i * this->ncols + j] = true;
+            }
+            else
+            {
+
+                this->new_cells[i * this->ncols + j] = false;
+            }
         }
     }
 
@@ -130,13 +135,18 @@ bool Grid::do_iteration_serial()
         {
 
             int num_n = this->num_neighbours(i, j);
-            if (this->cells[i * this->ncols + j])
+            bool condition1 = this->cells[i * this->ncols + j] && num_n != 2 && num_n != 3;
+            bool condition2 = !this->cells[i * this->ncols + j] && num_n == 3;
+            if (condition1 || condition2)
             {
-                if (num_n != 2 && num_n != 3)
-                    this->new_cells[i * this->ncols + j] = false;
-            }
-            else if (num_n == 3)
+
                 this->new_cells[i * this->ncols + j] = true;
+            }
+            else
+            {
+
+                this->new_cells[i * this->ncols + j] = false;
+            }
         }
     }
 
