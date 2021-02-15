@@ -73,7 +73,7 @@ void Grid::to_file(const int &it)
     std::stringstream fname;
     std::fstream f1;
 
-    fname << "output"
+    fname << "run"
           << "_" << it << ".dat";
 
     f1.open(fname.str().c_str(), std::ios_base::out);
@@ -215,7 +215,6 @@ void Grid::time_data_to_file(const int &steps, const int &size, const double &ti
     std::string fname = this->parallel ? "parallel_time_data.dat" : "serial_time_data.dat";
     std::ofstream f1;
     f1.open(fname, std::ofstream::app);
-    // std::cout << "Open = " << f1.is_open() << "\n";
 
     if (f1.is_open())
     {

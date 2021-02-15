@@ -1,8 +1,11 @@
+#pragma once
 #include <cstdint> // for specific size integers
 #include <fstream> // for file handling
 #include <vector>
 #include <memory>
 #include <stdio.h>
+#include "Grid.h"
+#include "Grid.cpp"
 
 using namespace std;
 
@@ -86,4 +89,46 @@ void writeGridImageFile(const std::vector<bool> &grid, std::string filename, int
     fclose(f);
 
     delete[] img;
+}
+
+void grid_to_file(int it, std::vector<bool> grid_input, int dim)
+{
+    std::stringstream fname;
+    std::fstream f1;
+
+    fname << "run"
+          << "_" << it << ".dat";
+
+    f1.open(fname.str().c_str(), std::ios_base::out);
+
+    for (int i = 0; i < dim; i++)
+    {
+        for (int j = 0; j < dim; j++)
+            f1 << grid_input[i * dim + j] << "\t";
+        f1 << "\n";
+    }
+    f1.close();
+}
+
+void print_IMG(std::vector<bool> grid_input, int rows, int cols, int it)
+{
+    std::stringstream fname;
+    fname << "IMG"
+          << "_" << it << ".bmp";
+    writeGridImageFile(grid_input, fname.str(), rows, cols);
+}
+
+void time_data_to_file(int steps, int size, double time, bool parallel)
+{
+    std::string fname = parallel ? "parallel_time_data.dat" : "serial_time_data.dat";
+    std::ofstream f1;
+    f1.open(fname, std::ofstream::app);
+
+    if (f1.is_open())
+    {
+        f1 << size << "\t" << steps << "\t" << time;
+        f1 << std::endl;
+    }
+
+    f1.close();
 }
