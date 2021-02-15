@@ -22,7 +22,9 @@ private:
 
 public:
     Grid(const int &num_rows, const int &num_cols, bool is_parallel = true);
+    Grid(const int &num_rows, const int &num_cols, std::vector<bool> &cell_states, bool is_parallel = true);
     ~Grid();
+
     int num_neighbours(const int &ii, const int &jj);
     void to_file(const int &it);
     bool do_iteration();

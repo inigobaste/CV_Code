@@ -37,6 +37,14 @@ Grid::Grid(const int &num_rows, const int &num_cols, bool is_parallel) : nrows(n
     }
 }
 
+Grid::Grid(const int &num_rows, const int &num_cols, std::vector<bool> &cell_states, bool is_parallel) : nrows(num_rows), ncols(num_cols), cells(cell_states), parallel(is_parallel)
+{
+    int size = num_rows * num_cols;
+
+    this->cells = cell_states;
+    this->new_cells.reserve(size);
+}
+
 Grid::~Grid()
 {
 }
