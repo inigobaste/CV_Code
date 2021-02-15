@@ -7,12 +7,19 @@
 #include <fstream>
 #include <memory>
 #include <utility>
+#include <locale>
 
 // random grid constructor
 // default is parallel
 Grid::Grid(const int &num_rows, const int &num_cols, bool is_parallel) : nrows(num_rows), ncols(num_cols), parallel(is_parallel)
 {
     int size = num_rows * num_cols;
+    int stringSize = size * 2 + this->nrows * 1;
+
+    // strings that will be written to .dat files
+    this->data.resize(stringSize);
+    this->new_data.resize(stringSize);
+
     // reserve size so vector doesn't have to auto-resize
     this->cells.reserve(size);
     this->new_cells.reserve(size);
@@ -60,12 +67,7 @@ void Grid::to_file(const int &it)
 
     f1.open(fname.str().c_str(), std::ios_base::out);
 
-    for (int i = 0; i < this->nrows; i++)
-    {
-        for (int j = 0; j < this->ncols; j++)
-            f1 << this->cells[i * this->ncols + j] << "\t";
-        f1 << std::endl;
-    }
+    f1 << this->data;
     f1.close();
 }
 
@@ -82,6 +84,7 @@ bool Grid::do_iteration_parallel()
 #pragma omp parallel for
     for (int i = 0; i < this->nrows; i++)
     {
+        int string_index = 0;
 
         for (int j = 0; j < this->ncols; j++)
         {
@@ -99,11 +102,27 @@ bool Grid::do_iteration_parallel()
 
                 this->new_cells[i * this->ncols + j] = false;
             }
+
+            // a string for the 0 or 1 followed by a tab
+            std::string string_bool = this->new_cells[i * this->ncols + j] ? "1" : "0";
+            std::string replacement = string_bool + "\t";
+
+            // index at which the 'replacement' string will be inserted
+            string_index = (i * this->ncols + j) * 2 + i;
+
+            this->new_data.replace(string_index, replacement.size(), replacement);
         }
+
+        // each row needs to be followed by a newline character
+        std::string endLine = "\n";
+        this->new_data.replace((i + 1) * this->ncols * 2 + i, endLine.size(), endLine);
     }
 
     // threading ends here
     this->cells.swap(this->new_cells);
+
+    // save in data variable, so it can be retained when new_data is altered
+    this->data = this->new_data;
 
     // return true if the iteration has reached steady state
     if (this->cells.size() != this->new_cells.size())
