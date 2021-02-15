@@ -7,6 +7,7 @@
 #include <omp.h>
 #include <string>
 #include "Grid.h"
+#include "doctest.h"
 
 using namespace std;
 
@@ -15,6 +16,12 @@ int max_steps = 1;
 
 int main()
 {
+    doctest::Context context;
+    // defaults: https://github.com/onqtam/doctest/blob/master/doc/markdown/main.md
+    context.setOption("abort-after", 5);   // stop test execution after 5 failed assertions
+    context.setOption("order-by", "name"); // sort the test cases by their name
+    context.run();
+
     ofstream ofs;
     ofs.open("time_data.dat", std::ofstream::trunc);
     ofs.close();
