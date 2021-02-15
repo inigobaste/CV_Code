@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
+//#include <memory>
 #include <utility>
+#include "Grid.h"
 
 // A sparse grid in Conway's Game of Life
 class COOGrid
@@ -16,6 +18,6 @@ private:
 public:
     COOGrid(const int &num_rows, const int &num_cols, std::vector<std::pair<int, int>> ij, bool is_parallel = true);
     ~COOGrid();
-    void do_iteration();
-    std::shared_ptr<Grid> COO_to_dense(); // IS IT <COOGrid> OR <Grid> ???
+    bool do_iteration_serial();
+    std::shared_ptr<Grid> COO_to_dense();
 };
