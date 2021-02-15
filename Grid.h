@@ -1,6 +1,7 @@
 #include <vector>
 #include <memory>
 #include "COOGrid.h"
+#include <string>
 
 // A grid in Conway's Game of Life
 class Grid
@@ -9,6 +10,9 @@ private:
     int nrows = -1;
     int ncols = -1;
     bool parallel = true;
+
+    std::string data = "";
+    std::string new_data = "";
 
     std::vector<bool> cells;
     std::vector<bool> new_cells;
