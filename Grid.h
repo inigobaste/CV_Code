@@ -14,15 +14,18 @@ private:
     std::string data = "";
     std::string new_data = "";
 
-    std::vector<bool> cells;
     std::vector<bool> new_cells;
 
     bool do_iteration_parallel();
     bool do_iteration_serial();
 
 public:
+    std::vector<bool> cells;
+
     Grid(const int &num_rows, const int &num_cols, bool is_parallel = true);
+    Grid(const int &num_rows, const int &num_cols, std::vector<bool> &cell_states, bool is_parallel = true);
     ~Grid();
+
     int num_neighbours(const int &ii, const int &jj);
     void to_file(const int &it);
     bool do_iteration();
