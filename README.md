@@ -44,6 +44,12 @@ A sparse equivalent of `Grid`.
 | new_coords | `std::vector<std::pair<int, int>>` | temporary storage of updated coordinates            |
 | parallel   | `bool`                             | whether to apply parallelisation in the methods     |
 
+## Testing
+
+As a test framework, we are using [doctest](https://github.com/onqtam/doctest), chosen because it's lightweight and doesn't have a huge impact on compile or run times. The doctest header is included in `./doctest.h` and tests should be added in `./tests.cpp`.
+
+To run this program without tests, add the `--no-run` flag when running the executable.
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
