@@ -1,7 +1,10 @@
 #pragma once
 #include <vector>
-//#include <memory>
+#include <memory>
 #include <utility>
+
+// declare Grid class to avoid circular import error
+class Grid;
 #include "Grid.h"
 
 // A sparse grid in Conway's Game of Life
