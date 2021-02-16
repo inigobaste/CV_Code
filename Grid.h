@@ -12,6 +12,7 @@ private:
     int nrows = -1;
     int ncols = -1;
     bool parallel = true;
+    int cores = 1;
 
     std::string data = "";
     std::string new_data = "";
@@ -23,8 +24,9 @@ public:
     std::vector<bool> cells;
     std::vector<bool> new_cells;
 
-    Grid(const int &num_rows, const int &num_cols, bool is_parallel = true);
+    Grid(const int &num_rows, const int &num_cols, bool is_parallel, int &n_cores);
     Grid(const int &num_rows, const int &num_cols, std::vector<bool> &cell_states, bool is_parallel = true);
+
     ~Grid();
 
     int num_neighbours(const int &ii, const int &jj);

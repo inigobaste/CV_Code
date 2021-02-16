@@ -33,12 +33,17 @@ int main(int argc, char **argv)
 
     if (learn_or_play)
     {
-        std::cout << "About the impact of file writing (1=yes / 0=no)?\n";
-        bool file_writing;
-        std::cin >> file_writing;
+
+        std::cout << "About the impact of file writing or image printing (1=yes / 0=no)?\n";
+        bool output;
+        std::cin >> output;
         std::cout << "\n";
-        if (file_writing)
+        if (output)
         {
+
+            std::cout << "Choose file writing (1) or image printing (0)?\n";
+            bool write_or_print;
+            std::cin >> write_or_print;
 
             std::cout << "What N would you like in NxN grid?\n";
             int dim;
@@ -47,26 +52,10 @@ int main(int argc, char **argv)
             std::cout << "How many cores would you like to use?\n";
             int n_cores;
             std::cin >> n_cores;
-            file_writing_analysis(dim, n_cores);
+            output_analysis(dim, n_cores, write_or_print);
         }
 
-        std::cout << "About the impact of image printing (1=yes / 0=no)?\n";
-        bool image_printing;
-        std::cin >> image_printing;
-        std::cout << "\n";
-        if (image_printing)
-        {
-            std::cout << "What N would you like in NxN grid?\n";
-            int dim;
-            std::cin >> dim;
-
-            std::cout << "How many cores would you like to use?\n";
-            int n_cores;
-            std::cin >> n_cores;
-            image_printing_analysis(dim, n_cores);
-        }
-
-        std::cout << "About the impact of grid size in the overall performance of the code (1=yes / 0=no)?\n";
+        std::cout << "About the impact of grid size in the performance of the game (1=yes / 0=no)?\n";
         bool grid_size;
         std::cin >> grid_size;
         std::cout << "\n";
@@ -75,6 +64,7 @@ int main(int argc, char **argv)
             std::cout << "How many cores would you like to use?\n";
             int n_cores;
             std::cin >> n_cores;
+            size_analysis(n_cores);
         }
 
         std::cout << "About the impact of the number of cores in the overall performance of the code (1=yes / 0=no)?\n";
@@ -86,6 +76,7 @@ int main(int argc, char **argv)
             std::cout << "What N would you like in NxN grid?\n";
             int dim;
             std::cin >> dim;
+            cores_analysis(dim);
         }
     }
     return 0;
