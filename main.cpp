@@ -3,16 +3,13 @@
 #include <fstream>
 #include <cstdlib>
 #include <time.h>
+#include <stdio.h>
 #include <vector>
 #include <omp.h>
 #include <string>
-#include "Grid.h"
 #include "doctest.h"
-
-using namespace std;
-
-double run_time, start_time;
-int max_steps = 1;
+#include "learn.h"
+#include "play.h"
 
 int main(int argc, char **argv)
 {
@@ -25,35 +22,63 @@ int main(int argc, char **argv)
     context.applyCommandLine(argc, argv);
     context.run();
 
-    ofstream ofs;
-    ofs.open("time_data.dat", std::ofstream::trunc);
-    ofs.close();
+    bool learn_or_play;
+    std::cout << "Would you like to play or to learn (0 or 1)\n";
+    std::cin >> learn_or_play;
+    std::cout << "\n";
 
-    vector<int> dims{10, 20, 100}; //, 500, 1000, 5000
-
-    for (int dim : dims)
+    if (learn_or_play)
     {
-        cout << "Dimension: " << dim << endl;
-        // create a random grid
-        Grid grid = Grid(dim, dim, true);
 
-        start_time = omp_get_wtime();
-        srand(time(NULL));
-
-        for (int n = 0; n < max_steps; n++)
+        std::cout << "About the impact of file writing or image printing (1=yes / 0=no)?\n";
+        bool output;
+        std::cin >> output;
+        std::cout << "\n";
+        if (output)
         {
-            bool isSteadyState = grid.do_iteration();
-            if (isSteadyState)
-            {
-                std::cout << "Steady state was reached." << std::endl;
-                break;
-            }
 
-            grid.to_file(n);
+            std::cout << "Choose file writing (1) or image printing (0)?\n";
+            bool write_or_print;
+            std::cin >> write_or_print;
+
+            std::cout << "What N would you like in NxN grid?\n";
+            int dim;
+            std::cin >> dim;
+
+            std::cout << "How many cores would you like to use?\n";
+            int n_cores;
+            std::cin >> n_cores;
+            output_analysis(dim, n_cores, write_or_print);
         }
 
-        run_time = omp_get_wtime() - start_time;
-        grid.time_data_to_file(max_steps, dim, run_time);
+        std::cout << "About the impact of grid size in the performance of the game (1=yes / 0=no)?\n";
+        bool grid_size;
+        std::cin >> grid_size;
+        std::cout << "\n";
+        if (grid_size)
+        {
+            std::cout << "How many cores would you like to use?\n";
+            int n_cores;
+            std::cin >> n_cores;
+            size_analysis(n_cores);
+        }
+
+        std::cout << "About the impact of the number of cores in the overall performance of the code (1=yes / 0=no)?\n";
+        bool cores;
+        std::cin >> cores;
+        std::cout << "\n";
+        if (cores)
+        {
+            std::cout << "What N would you like in NxN grid?\n";
+            int dim;
+            std::cin >> dim;
+            cores_analysis(dim);
+        }
+    }
+
+    else if (learn_or_play == false)
+    {
+        play();
     }
 
     return 0;

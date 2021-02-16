@@ -1,6 +1,7 @@
-a.out
+*.out
 **/*.o
 .vscode/
 *.bmp
 *.dat
 **/tempCodeRunnerFile.*
+*

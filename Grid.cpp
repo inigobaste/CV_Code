@@ -1,4 +1,5 @@
 #include "Grid.h"
+#include "COOGrid.h"
 #include <omp.h>
 #include <vector>
 #include <cstdlib>
@@ -6,12 +7,13 @@
 #include <sstream>
 #include <fstream>
 #include <memory>
+#include <time.h>
 #include <utility>
 #include <locale>
 
 // random grid constructor
 // default is parallel
-Grid::Grid(const int &num_rows, const int &num_cols, bool is_parallel) : nrows(num_rows), ncols(num_cols), parallel(is_parallel)
+Grid::Grid(const int &num_rows, const int &num_cols, bool is_parallel, int &n_cores) : nrows(num_rows), ncols(num_cols), parallel(is_parallel), cores(n_cores)
 {
     int size = num_rows * num_cols;
     int stringSize = size * 2 + this->nrows * 1;
@@ -21,8 +23,10 @@ Grid::Grid(const int &num_rows, const int &num_cols, bool is_parallel) : nrows(n
     this->new_data.resize(stringSize);
 
     // reserve size so vector doesn't have to auto-resize
-    this->cells.reserve(size);
-    this->new_cells.reserve(size);
+
+    this->cells.resize(size);
+    this->new_cells.resize(size);
+    srand(time(NULL));
 
     if (is_parallel)
     {
@@ -70,7 +74,7 @@ void Grid::to_file(const int &it)
     std::stringstream fname;
     std::fstream f1;
 
-    fname << "output"
+    fname << "run"
           << "_" << it << ".dat";
 
     f1.open(fname.str().c_str(), std::ios_base::out);
@@ -83,12 +87,14 @@ void Grid::to_file(const int &it)
 bool Grid::do_iteration_parallel()
 {
 
+    omp_set_num_threads(this->cores);
 #pragma omp parallel for
     for (int i = 0; i < this->cells.size(); i++)
     {
         this->new_cells[i] = this->cells[i];
     }
 
+    omp_set_num_threads(this->cores);
 #pragma omp parallel for
     for (int i = 0; i < this->nrows; i++)
     {
@@ -222,21 +228,21 @@ void Grid::time_data_to_file(const int &steps, const int &size, const double &ti
     f1.close();
 }
 
-// convert to sparse storage system
-std::shared_ptr<COOGrid> Grid::dense_to_COO()
-{
-    std::vector<std::pair<int, int>> coords{};
+// // convert to sparse storage system
+// std::shared_ptr<COOGrid> Grid::dense_to_COO()
+// {
+//     std::vector<std::pair<int, int>> coords{};
 
-    for (int i = 0; i < this->nrows; i++)
-    {
-        for (int j = 0; j < this->ncols; j++)
-        {
-            if (this->cells[i * this->ncols + j]) // check for nnz entries
-            {
-                std::cout << i << j << std::endl;
-                coords.push_back(std::make_pair(i, j));
-            }
-        }
-    }
-    return std::make_shared<COOGrid>(this->nrows, this->ncols, coords);
-}
+//     for (int i = 0; i < this->nrows; i++)
+//     {
+//         for (int j = 0; j < this->ncols; j++)
+//         {
+//             if (this->cells[i * this->ncols + j]) // check for nnz entries
+//             {
+//                 // std::cout << i << j << std::endl;
+//                 coords.push_back(std::make_pair(i, j));
+//             }
+//         }
+//     }
+//     return std::make_shared<COOGrid>(this->nrows, this->ncols, coords);
+// }
