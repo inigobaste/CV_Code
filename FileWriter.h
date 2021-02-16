@@ -118,17 +118,16 @@ void print_IMG(std::vector<bool> grid_input, int rows, int cols, int it)
     writeGridImageFile(grid_input, fname.str(), rows, cols);
 }
 
-void time_data_to_file(int steps, int size, double time, bool parallel)
+void time_data_to_file(std::string fname, int steps, int size, double time)
 {
-    std::string fname = parallel ? "parallel_time_data.dat" : "serial_time_data.dat";
-    std::ofstream f1;
-    f1.open(fname, std::ofstream::app);
+    std::fstream f;
+    f.open(fname, std::fstream::out | std::fstream::app);
 
-    if (f1.is_open())
+    if (f.is_open())
     {
-        f1 << size << "\t" << steps << "\t" << time;
-        f1 << std::endl;
+        f << size << "\t" << steps << "\t" << time;
+        f << std::endl;
     }
 
-    f1.close();
+    f.close();
 }

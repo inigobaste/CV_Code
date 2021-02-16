@@ -11,7 +11,6 @@
 #include "doctest.h"
 #include "Grid.cpp"
 #include "COOGrid.cpp"
-
 #include "FileWriter.h"
 #include "learn.h"
 #include "play.h"
@@ -27,12 +26,6 @@ int main(int argc, char **argv)
     context.applyCommandLine(argc, argv);
     context.run();
 
-    std::ofstream ofs;
-    ofs.open("time_data.dat", std::ofstream::trunc);
-
-    ofs.close();
-
-    std::vector<int> dims{1000};
     bool learn_or_play;
     std::cout << "Would you like to play or to learn (0 or 1)\n";
     std::cin >> learn_or_play;
@@ -54,6 +47,7 @@ int main(int argc, char **argv)
             std::cout << "How many cores would you like to use?\n";
             int n_cores;
             std::cin >> n_cores;
+            file_writing_analysis(dim, n_cores);
         }
 
         std::cout << "About the impact of image printing (1=yes / 0=no)?\n";
@@ -69,6 +63,7 @@ int main(int argc, char **argv)
             std::cout << "How many cores would you like to use?\n";
             int n_cores;
             std::cin >> n_cores;
+            image_printing_analysis(dim, n_cores);
         }
 
         std::cout << "About the impact of grid size in the overall performance of the code (1=yes / 0=no)?\n";
@@ -93,4 +88,5 @@ int main(int argc, char **argv)
             std::cin >> dim;
         }
     }
+    return 0;
 }

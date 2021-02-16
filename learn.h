@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -15,17 +16,19 @@
 
 double run_time, start_time;
 
+// This function calculates execution time series
+// for parallelisation of file-writing and for the
+// serial case
 void file_writing_analysis(int dim, int n_cores)
 {
     // Number of generations in the game
     int max_steps = n_cores * 100;
 
     // Evaluate execution time for parallelised file-writing
-    std::stringstream par_name;
-    par_name << "parallel_FW_time.dat";
+    std::string par_name = "parallel_FW_time.dat";
     std::fstream fp;
-
-    fp.open(par_name.str().c_str(), std::ofstream::trunc);
+    fp.open(par_name, std::fstream::out | std::fstream::trunc);
+    fp.close();
 
     if (dim > 10000)
     {
@@ -74,23 +77,22 @@ void file_writing_analysis(int dim, int n_cores)
 
                 grid_to_file(i + (n + 1) - n_cores, v, dim);
             }
-
-            // Record time at time-step
-            run_time = omp_get_wtime() - start_time;
-            bool write_parallel = 1;
-            time_data_to_file(n, dim, run_time, write_parallel);
             cnt = -1;
             store_grids.clear();
         }
+        // Record time at time-step
+        run_time = omp_get_wtime() - start_time;
+        time_data_to_file(par_name, n, dim, run_time);
         cnt++;
     }
 
-    fp.close();
+    start_time = omp_get_wtime();
 
     // Evaluate execution time for serial file-writing
-    std::stringstream ser_name;
-    ser_name << "serial_FW_time.dat";
+    std::string ser_name = "serial_FW_time.dat";
     std::fstream fs;
+    fs.open(ser_name, std::fstream::out | std::fstream::trunc);
+    fs.close();
 
     for (int n = 0; n < max_steps; n++)
     {
@@ -100,11 +102,96 @@ void file_writing_analysis(int dim, int n_cores)
 
         // Record time at time-step
         run_time = omp_get_wtime() - start_time;
-        bool write_parallel = 0;
-        time_data_to_file(n, dim, run_time, write_parallel);
+        time_data_to_file(ser_name, n, dim, run_time);
+    }
+}
+
+// This function calculates execution time series
+// for parallelisation of image-printing and for the
+// serial case
+void image_printing_analysis(int dim, int n_cores)
+{
+    // Number of generations in the game
+    int max_steps = n_cores * 100;
+
+    // Evaluate execution time for parallelised file-writing
+    std::string par_name = "parallel_IP_time.dat";
+    std::fstream fp;
+    fp.open(par_name, std::fstream::out | std::fstream::trunc);
+    fp.close();
+
+    if (dim > 10000)
+    {
+        dim = 10000;
+        std::cout << "Your size input was too large, we use N=1000 instead\n";
     }
 
-    fp.close();
+    if (dim < 100)
+    {
+        dim = 10000;
+        std::cout << "Your size input was too small, we use N=1000 instead\n";
+    }
+
+    // create a random grid
+    Grid grid = Grid(dim, dim, true);
+
+    start_time = omp_get_wtime();
+
+    std::vector<bool> store_grids;
+
+    int cnt = 0;
+
+    for (int n = 0; n < max_steps; n++)
+    {
+        // Calculate next generation in the game
+        grid.do_iteration();
+        store_grids.resize(grid.cells.size() * n_cores);
+
+        omp_set_num_threads(n_cores);
+#pragma omp parallel for
+        for (int i = cnt * grid.cells.size(); i < ((cnt + 1) * grid.cells.size()); i++)
+        {
+            store_grids[i] = grid.cells[i % grid.cells.size()];
+        }
+
+        // Every number of iterations equal to the number of cores used
+        if ((n + 1) % n_cores == 0)
+        {
+            omp_set_num_threads(n_cores);
+#pragma omp parallel for
+            for (int i = 0; i < n_cores; i++)
+            {
+                vector<bool>::const_iterator first = store_grids.begin() + i * grid.cells.size();
+                vector<bool>::const_iterator last = store_grids.begin() + (i + 1) * grid.cells.size();
+                vector<bool> v(first, last);
+
+                print_IMG(v, dim, dim, i + (n + 1) - n_cores);
+            }
+            cnt = -1;
+            store_grids.clear();
+        }
+        // Record time at time-step
+        run_time = omp_get_wtime() - start_time;
+        time_data_to_file(par_name, n, dim, run_time);
+        cnt++;
+    }
+
+    // Evaluate execution time for serial file-writing
+    std::string ser_name = "serial_IP_time.dat";
+    std::fstream fs;
+    fs.open(ser_name, std::fstream::out | std::fstream::trunc);
+
+    for (int n = 0; n < max_steps; n++)
+    {
+        // Calculate next generation in the game
+        grid.do_iteration();
+
+        print_IMG(grid.cells, dim, dim, n);
+
+        // Record time at time-step
+        run_time = omp_get_wtime() - start_time;
+        time_data_to_file(ser_name, n, dim, run_time);
+    }
 }
 
 //     vector<int> dims{1000};
