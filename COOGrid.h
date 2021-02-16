@@ -1,6 +1,11 @@
 #pragma once
 #include <vector>
+#include <memory>
 #include <utility>
+
+// declare Grid class to avoid circular import error
+class Grid;
+#include "Grid.h"
 
 // A sparse grid in Conway's Game of Life
 class COOGrid
@@ -16,5 +21,6 @@ private:
 public:
     COOGrid(const int &num_rows, const int &num_cols, std::vector<std::pair<int, int>> ij, bool is_parallel = true);
     ~COOGrid();
-    void do_iteration();
+    bool do_iteration_serial();
+    std::shared_ptr<Grid> COO_to_dense();
 };
