@@ -79,5 +79,11 @@ int main(int argc, char **argv)
             cores_analysis(dim);
         }
     }
+
+    else if (learn_or_play == false)
+    {
+        play();
+    }
+
     return 0;
 }

@@ -85,7 +85,7 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
 
                 if (write_or_print)
                 {
-                    grid_to_file(i + (n + 1) - n_cores, v, dim);
+                    grid_to_file(i + (n + 1) - n_cores, v, dim, dim);
                 }
                 else
                 {
@@ -97,7 +97,7 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
         }
         // Record time at time-step
         run_time = omp_get_wtime() - start_time;
-        time_data_to_file(par_name, n, dim, run_time);
+        time_data_to_file(par_name, n, dim, dim, run_time);
         cnt++;
     }
 
@@ -133,7 +133,7 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
 
         // Record time at time-step
         run_time = omp_get_wtime() - start_time;
-        time_data_to_file(ser_name, n, dim, run_time);
+        time_data_to_file(ser_name, n, dim, dim, run_time);
     }
 }
 
@@ -159,7 +159,7 @@ void size_analysis(int n_cores)
 
         // Record time at time-step
         run_time = omp_get_wtime() - start_time;
-        time_data_to_file(par_name, 1, dim, run_time);
+        time_data_to_file(par_name, 1, dim, dim, run_time);
     }
 
     // Evaluate execution time for serial grids
@@ -186,7 +186,7 @@ void size_analysis(int n_cores)
 
         // Record time at time-step
         run_time = omp_get_wtime() - start_time;
-        time_data_to_file(ser_name, 1, dim, run_time);
+        time_data_to_file(ser_name, 1, dim, dim, run_time);
     }
 }
 
@@ -211,6 +211,6 @@ void cores_analysis(int dim)
 
         // Record time at time-step
         run_time = omp_get_wtime() - start_time;
-        time_data_to_file(par_name, n_cores, dim, run_time);
+        time_data_to_file(par_name, n_cores, dim, dim, run_time);
     }
 }
