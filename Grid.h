@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <string>
 class COOGrid;
 #include "COOGrid.h"
 
@@ -32,5 +33,5 @@ public:
     void to_file(const int &it);
     bool do_iteration();
     void time_data_to_file(const int &steps, const int &size, const double &time);
-    // std::shared_ptr<COOGrid> dense_to_COO();
+    std::shared_ptr<COOGrid> dense_to_COO();
 };

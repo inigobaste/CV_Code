@@ -112,6 +112,7 @@ std::shared_ptr<Grid> COOGrid::COO_to_dense()
     {
         cells[this->coords[i].first * this->ncols + this->coords[i].second] = true;
     }
-
-    return std::make_shared<Grid>(this->nrows, this->ncols, false);
+    // TO DO: make number of cores dynamic
+    int num_cores = 1;
+    return std::make_shared<Grid>(this->nrows, this->ncols, false, num_cores);
 }
