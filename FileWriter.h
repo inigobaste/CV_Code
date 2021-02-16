@@ -5,7 +5,6 @@
 #include <memory>
 #include <stdio.h>
 #include "Grid.h"
-#include "Grid.cpp"
 
 using namespace std;
 

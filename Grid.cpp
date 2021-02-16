@@ -1,5 +1,5 @@
 #include "Grid.h"
-// #include "COOGrid.h"
+#include "COOGrid.h"
 #include <omp.h>
 #include <vector>
 #include <cstdlib>

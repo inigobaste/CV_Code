@@ -9,9 +9,7 @@
 #include <omp.h>
 #include <string>
 #include "Grid.h"
-// #include "Grid.cpp"
 #include "COOGrid.h"
-// #include "COOGrid.cpp"
 #include "FileWriter.h"
 void play()
 {

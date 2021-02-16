@@ -7,11 +7,7 @@
 #include <vector>
 #include <omp.h>
 #include <string>
-#include "Grid.h"
 #include "doctest.h"
-#include "Grid.cpp"
-#include "COOGrid.cpp"
-#include "FileWriter.h"
 #include "learn.h"
 #include "play.h"
 
