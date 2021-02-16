@@ -3,11 +3,6 @@
 #include <memory>
 class COOGrid;
 #include "COOGrid.h"
-#include <string>
-
-// declare COOGrid class to avoid circular import error
-class COOGrid;
-#include "COOGrid.h"
 
 // A grid in Conway's Game of Life
 class Grid
