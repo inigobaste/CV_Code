@@ -63,3 +63,30 @@ TEST_CASE("test iteration for 10x10 grid")
         CHECK(grid.cells[i] == expected[i]);
     }
 }
+
+TEST_CASE("returns true when it hits steady state")
+{
+    std::vector<bool> input = {0, 0, 0, 0, 0, 0,
+                               0, 0, 1, 1, 0, 0,
+                               0, 0, 0, 1, 0, 0,
+                               0, 0, 0, 0, 0, 0,
+                               0, 0, 0, 0, 0, 0};
+
+    Grid grid = Grid(5, 6, input);
+    bool first_iteration = grid.do_iteration();
+    bool second_iteration = grid.do_iteration();
+
+    CHECK(first_iteration == false);
+    CHECK(second_iteration == true);
+}
+
+TEST_CASE("generation counter increments correctly")
+{
+    std::vector<bool> input = {0, 1, 0, 1};
+
+    Grid grid = Grid(2, 2, input);
+    grid.do_iteration();
+    grid.do_iteration();
+
+    CHECK(grid.generation == 2);
+}
