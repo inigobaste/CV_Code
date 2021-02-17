@@ -123,6 +123,10 @@ void output_analysis(int dim, int n_cores, bool write_or_print, int max_steps)
         {
             start_time = omp_get_wtime();
 
+            // if this is the last iteration and number of iterations is not a multiple
+            // of number of threads used, the for loop is restricted to the remainder
+            int end = n == max_steps - 1 && max_steps % n_cores != 0 ? ((n + 1) % n_cores) : n_cores;
+
             // Assign grid of current iteration to vector of
             // previous iterations
             omp_set_num_threads(n_cores);
@@ -139,13 +143,13 @@ void output_analysis(int dim, int n_cores, bool write_or_print, int max_steps)
                 // stored iteration of the grid
                 omp_set_num_threads(n_cores);
 #pragma omp parallel for
-                for (int i = 0; i < n_cores; i++)
+                for (int i = 0; i < end; i++)
                 {
                     // Each thread takes one grid from a previous iteration
                     vector<bool>::const_iterator first = store_grids.begin() + i * grid.cells.size();
                     vector<bool>::const_iterator last = store_grids.begin() + (i + 1) * grid.cells.size();
                     vector<bool> v(first, last);
-                    print_IMG(v, dim, dim, i + (n + 1) - n_cores);
+                    print_IMG(v, dim, dim, i + (n + 1) - end);
                 }
                 // Restart counter
                 cnt = -1;
