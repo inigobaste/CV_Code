@@ -85,6 +85,9 @@ void play()
                 std::cout << "Provide number of iterations\n";
                 std::cin >> its;
             }
+            // Vector containing n_cores number of grids
+            // from previous iterations gets initialised
+            store_grids.resize(grid.cells.size() * n_cores);
         }
         else if (all_its == false)
         {
@@ -160,10 +163,6 @@ void play()
         // Perform output operations for all iterations
         if (all_its)
         {
-            // Vector containing n_cores number of grids
-            // from previus iterations gets initialised
-            store_grids.resize(grid.cells.size() * n_cores);
-
             // Assign grid of current iteration to vector of
             // previous iterations
             omp_set_num_threads(n_cores);
@@ -176,7 +175,7 @@ void play()
             // Every number of iterations equal to the number of cores used
             if ((n + 1) % n_cores == 0)
             {
-                // Every thread will perform output operations on a previously
+                // Each thread will perform output operations on a previously
                 // stored iteration of the grid
                 omp_set_num_threads(n_cores);
 #pragma omp parallel for
@@ -202,10 +201,8 @@ void play()
                         print_IMG(v, rows, cols, i + (n + 1) - n_cores);
                     }
                 }
-                // Restart counter and clear previous grid
-                // iterations from vector
+                // Restart counter
                 cnt = -1;
-                store_grids.clear();
             }
             cnt++;
         }
