@@ -28,11 +28,17 @@ A dense storage system for the game of life.
 #### Methods
 
 `num_neighbours`: returns the number of alive neighbours of a cell
+
 `to_file`: creates a `.dat` file of 0's and 1's representing the states of the cells
+
 `do_iteration`: compute next generation of the grid cell states, either in serial or parallel
+
 `do_iteration_serial`: compute next generation of the grid cell states in serial
+
 `do_iteration_parallel`: compute next generation of the grid cell states in parallel
+
 `time_data_to_file`: writes timings to .dat file
+
 `dense_to_COO`: shared pointer, converts `Grid` object to `COOGrid` object
 
 ### COOGrid
@@ -52,7 +58,9 @@ A sparse equivalent of `Grid` using coordinate list (COO) storage.
 #### Methods
 
 `do_iteration_serial`: compute next generation of the grid cell states in serial
+
 `do_iteration_parallel`: compute next generation of the grid cell states in parallel
+
 `COO_to_dense`: shared pointer, converts `COOGrid` object to `Grid` object
 
 ## Testing
