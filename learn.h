@@ -117,8 +117,6 @@ void output_analysis(int dim, int n_cores, bool write_or_print, int max_steps)
         for (int n = 0; n < max_steps; n++)
         {
             start_time = omp_get_wtime();
-            // Calculate next generation in the game
-            grid.do_iteration();
 
             // Assign grid of current iteration to vector of
             // previous iterations
@@ -167,7 +165,6 @@ void output_analysis(int dim, int n_cores, bool write_or_print, int max_steps)
         for (int n = 0; n < max_steps; n++)
         {
             // Calculate next generation in the game
-            grid.do_iteration();
             print_IMG(grid.cells, dim, dim, n);
 
             // Record time at time-step
