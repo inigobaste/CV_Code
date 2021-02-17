@@ -128,7 +128,7 @@ void play()
     for (int n = 0; n < its; n++)
     {
         // Calculate next generation in the game
-        bool steady_state = grid.do_iteration();
+        bool steady_state = grid.do_iteration(write || both);
 
         if (steady_state)
         {

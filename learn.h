@@ -200,7 +200,7 @@ void size_analysis(int n_cores)
         Grid grid = Grid(dim, dim, true, n_cores);
 
         // Calculate next generation in the game
-        grid.do_iteration();
+        grid.do_iteration(false);
 
         // Record time at time-step
         run_time = omp_get_wtime() - start_time;
@@ -224,7 +224,7 @@ void size_analysis(int n_cores)
         Grid grid = Grid(dim, dim, false, single_core);
 
         // Calculate next generation in the game
-        grid.do_iteration();
+        grid.do_iteration(false);
 
         // Record time at time-step
         run_time = omp_get_wtime() - start_time;
@@ -251,7 +251,7 @@ void iterations_analysis(int dim, int n_cores, int max_steps)
     for (int n = 0; n < max_steps; n++)
     {
         // Calculate next generation in the game
-        grid.do_iteration();
+        grid.do_iteration(false);
 
         // Record time at time-step
         run_time = omp_get_wtime() - start_time;
@@ -275,7 +275,7 @@ void iterations_analysis(int dim, int n_cores, int max_steps)
     {
 
         // Calculate next generation in the game
-        grid2.do_iteration();
+        grid2.do_iteration(false);
 
         // Record time at time-step
         run_time = omp_get_wtime() - start_time;
@@ -302,7 +302,7 @@ void cores_analysis(int dim)
         Grid grid = Grid(dim, dim, true, n_cores);
 
         // Calculate next generation in the game
-        grid.do_iteration();
+        grid.do_iteration(false);
 
         // Record time at time-step
         run_time = omp_get_wtime() - start_time;
