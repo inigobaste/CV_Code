@@ -27,19 +27,19 @@ A dense storage system for the game of life.
 
 #### Methods
 
-* `num_neighbours`: returns the number of alive neighbours of a cell
+- `num_neighbours`: returns the number of alive neighbours of a cell
 
-* `to_file`: creates a `.dat` file of 0's and 1's representing the states of the cells
+- `to_file`: creates a `.dat` file of 0's and 1's representing the states of the cells
 
-* `do_iteration`: compute next generation of the grid cell states, either in serial or parallel
+- `do_iteration`: compute next generation of the grid cell states, either in serial or parallel
 
-* `do_iteration_serial`: compute next generation of the grid cell states in serial
+- `do_iteration_serial`: compute next generation of the grid cell states in serial
 
-* `do_iteration_parallel`: compute next generation of the grid cell states in parallel
+- `do_iteration_parallel`: compute next generation of the grid cell states in parallel
 
-* `time_data_to_file`: writes timings to .dat file
+- `time_data_to_file`: writes timings to .dat file
 
-* `dense_to_COO`: shared pointer, converts `Grid` object to `COOGrid` object
+- `dense_to_COO`: shared pointer, converts `Grid` object to `COOGrid` object
 
 ### COOGrid
 
@@ -57,11 +57,11 @@ A sparse equivalent of `Grid` using coordinate list (COO) storage.
 
 #### Methods
 
-* `do_iteration_serial`: compute next generation of the grid cell states in serial
+- `do_iteration_serial`: compute next generation of the grid cell states in serial
 
-* `do_iteration_parallel`: compute next generation of the grid cell states in parallel
+- `do_iteration_parallel`: compute next generation of the grid cell states in parallel
 
-* `COO_to_dense`: shared pointer, converts `COOGrid` object to `Grid` object
+- `COO_to_dense`: shared pointer, converts `COOGrid` object to `Grid` object
 
 ## Testing
 
@@ -69,9 +69,10 @@ As a test framework, we are using [doctest](https://github.com/onqtam/doctest), 
 
 To run this program without tests, add the `--no-run` flag when running the executable.
 
-The tests are executed for the `Grid` method `do_iteration` and the `COOGrid` methods `do_iteration_serial` and `do_iteration_parallel`. 
+The tests are executed for the `Grid` method `do_iteration` and the `COOGrid` methods `do_iteration_serial` and `do_iteration_parallel`.
 
 ### Tests
+
 1 - First Iteration for "Block" Creation: 5x6 grid forming a "block" after first iteration
 
 2 - Test for 10x10 Grid: Elementwise accuracy check for an iteration over a 10x10 grid
@@ -85,6 +86,11 @@ The tests are executed for the `Grid` method `do_iteration` and the `COOGrid` me
 ![Test Image 1](https://github.com/acse-2020/group-project-parallel-panicking/blob/main/Screen%20Shot%202021-02-17%20at%2018.27.36.png)
 ![Test Image 1](https://github.com/acse-2020/group-project-parallel-panicking/blob/main/Screen%20Shot%202021-02-17%20at%2018.27.48.png)
 
+## Image printing
+
+We chose to create our images in bitmap format since the bitmap structure is fairly straightforward and the grid data structure lends itself to writing to a .bmp file. The first part of the file is a header which contains metadata about how much data is stored and how to display the pixels. Then our cell data is written to the file from the last line to the first. Each row needs to be a multiple of 4 bytes long, so if our grid width doesn't fulfill that, we add some padding at the end. The code was inspired by this [StackOverflow question](https://stackoverflow.com/questions/2654480/writing-bmp-image-in-pure-c-c-without-other-libraries).
+
+For more information see [this article](https://medium.com/sysf/bits-to-bitmaps-a-simple-walkthrough-of-bmp-image-format-765dc6857393).
 
 ## License
 

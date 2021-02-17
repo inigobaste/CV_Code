@@ -88,12 +88,15 @@ void write_grid_image_file(const std::vector<bool> &grid, std::string filename, 
 
     f = fopen(filename.c_str(), "wb");
 
+    // write header/ file metadata
     fwrite(bmpFileHeader, 1, 14, f);
     fwrite(bmpInfoHeader, 1, 40, f);
 
     for (int i = 0; i < h; i++)
     {
+        // write data from last line to first
         fwrite(img + (w * (h - i - 1) * 3), 3, w, f);
+        // add padding if row is not a multiple of 4 bytes long
         fwrite(bmppad, 1, (4 - (w * 3) % 4) % 4, f);
     }
 
