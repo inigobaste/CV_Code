@@ -46,7 +46,7 @@ Grid::Grid(const int &num_rows, const int &num_cols, std::vector<bool> &cell_sta
     int size = num_rows * num_cols;
 
     this->cells = cell_states;
-    this->new_cells.reserve(size);
+    this->new_cells.resize(size);
 }
 
 Grid::~Grid()
