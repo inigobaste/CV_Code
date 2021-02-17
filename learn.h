@@ -11,6 +11,7 @@
 #include "Grid.h"
 #include "COOGrid.h"
 #include "FileWriter.h"
+#include <string>
 
 // This file produces execution time .dat files to evaluate the time performance
 // of different operations of the game and the impact of their parallelisation
@@ -23,7 +24,7 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
     // Number of generations in the game must be a multiple of
     // the number of cores, due to the way output operations
     // are parallelised
-    int max_steps = n_cores * 100;
+    int max_steps = n_cores * 800;
 
     // Initialise file to write execution time for parallelised output
     std::string par_name;
@@ -42,10 +43,19 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
     // create a random grid
     Grid grid = Grid(dim, dim, true, n_cores);
 
-    // Vector containing n_cores number of grids
-    // from previous iterations gets initialised
+    // Vectors containing n_cores number of grids
+    // from previous iterations get initialised
+    std::vector<std::string> string_grids;
     std::vector<bool> store_grids;
-    store_grids.resize(grid.cells.size() * n_cores);
+
+    if (write_or_print)
+    {
+        string_grids.resize(n_cores);
+    }
+    else
+    {
+        store_grids.resize(grid.cells.size() * n_cores);
+    }
 
     // Counter initialised. Indicates iterations after last output
     int cnt = 0;
@@ -58,13 +68,20 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
         // Calculate next generation in the game
         grid.do_iteration();
 
-        // Assign grid of current iteration to vector of
-        // previous iterations
-        omp_set_num_threads(n_cores);
-#pragma omp parallel for
-        for (int i = cnt * grid.cells.size(); i < ((cnt + 1) * grid.cells.size()); i++)
+        if (write_or_print)
         {
-            store_grids[i] = grid.cells[i % grid.cells.size()];
+            string_grids[cnt] = grid.data;
+        }
+        else
+        {
+            // Assign grid of current iteration to vector of
+            // previous iterations
+            omp_set_num_threads(n_cores);
+#pragma omp parallel for
+            for (int i = cnt * grid.cells.size(); i < ((cnt + 1) * grid.cells.size()); i++)
+            {
+                store_grids[i] = grid.cells[i % grid.cells.size()];
+            }
         }
 
         // Every number of iterations equal to the number of cores used
@@ -76,19 +93,19 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
 #pragma omp parallel for
             for (int i = 0; i < n_cores; i++)
             {
-                // Each thread takes one grid from a previous iteration
-                vector<bool>::const_iterator first = store_grids.begin() + i * grid.cells.size();
-                vector<bool>::const_iterator last = store_grids.begin() + (i + 1) * grid.cells.size();
-                vector<bool> v(first, last);
 
                 // Depending on option chosen, write grid
                 // to .dat, or print .bmp image
                 if (write_or_print)
                 {
-                    grid_to_file(i + (n + 1) - n_cores, v, dim, dim);
+                    grid_to_file(i + (n + 1) - n_cores, string_grids[i], dim, dim);
                 }
                 else
                 {
+                    // Each thread takes one grid from a previous iteration
+                    vector<bool>::const_iterator first = store_grids.begin() + i * grid.cells.size();
+                    vector<bool>::const_iterator last = store_grids.begin() + (i + 1) * grid.cells.size();
+                    vector<bool> v(first, last);
                     print_IMG(v, dim, dim, i + (n + 1) - n_cores);
                 }
             }
