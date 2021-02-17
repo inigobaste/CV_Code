@@ -22,5 +22,6 @@ public:
     COOGrid(const int &num_rows, const int &num_cols, std::vector<std::pair<int, int>> ij, bool is_parallel = true);
     ~COOGrid();
     bool do_iteration_serial();
+    bool do_iteration_parallel();
     std::shared_ptr<Grid> COO_to_dense();
 };
