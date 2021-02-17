@@ -11,6 +11,7 @@
 #include "learn.h"
 #include "play.h"
 
+// This file gives the user the option to test, play or receive output about the code performance
 int main(int argc, char **argv)
 {
     doctest::Context context;
@@ -48,6 +49,8 @@ int main(int argc, char **argv)
             std::cout << "How many cores would you like to use?\n";
             int n_cores;
             std::cin >> n_cores;
+
+            std::cout << "Code running...\n";
             output_analysis(dim, n_cores, write_or_print);
         }
 
@@ -60,6 +63,7 @@ int main(int argc, char **argv)
             std::cout << "How many cores would you like to use?\n";
             int n_cores;
             std::cin >> n_cores;
+            std::cout << "Code running...\n";
             size_analysis(n_cores);
         }
 
@@ -72,6 +76,7 @@ int main(int argc, char **argv)
             std::cout << "What N would you like in NxN grid?\n";
             int dim;
             std::cin >> dim;
+            std::cout << "Code running...\n";
             cores_analysis(dim);
         }
     }

@@ -12,11 +12,12 @@
 #include "COOGrid.h"
 #include "FileWriter.h"
 
-double run_time, start_time;
+// This file produces execution time .dat files to evaluate the time performance
+// of different operations of the game and the impact of their parallelisation
 
-// This function calculates execution time series
-// for parallelisation of file-writing and for the
-// serial case
+double run_time, start_time;
+// This function calculates execution time series when
+// providing output in parallel and serial cases
 void output_analysis(int dim, int n_cores, bool write_or_print)
 {
     // Number of generations in the game
@@ -35,18 +36,6 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
     std::fstream fp;
     fp.open(par_name, std::fstream::out | std::fstream::trunc);
     fp.close();
-
-    if (dim > 10000)
-    {
-        dim = 10000;
-        std::cout << "Your size input was too large, we use N=1000 instead\n";
-    }
-
-    if (dim < 100)
-    {
-        dim = 10000;
-        std::cout << "Your size input was too small, we use N=1000 instead\n";
-    }
 
     // create a random grid
     Grid grid = Grid(dim, dim, true, n_cores);
