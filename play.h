@@ -47,7 +47,10 @@ void play()
     std::vector<bool> store_grids;
     std::vector<int> output_its;
     int cnt;
-    bool print, write, both, all_its;
+    bool print = false;
+    bool write = false;
+    bool both = false;
+    bool all_its = false;
 
     if (write_or_print)
     {
