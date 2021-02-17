@@ -152,7 +152,7 @@ void size_analysis(int n_cores)
     fp.open(par_name, std::fstream::out | std::fstream::trunc);
     fp.close();
 
-    std::vector<int> dims = {10, 100, 1000, 5000, 10000};
+    std::vector<int> dims = {10, 100, 1000, 5000, 10000, 20000};
 
     // Start clock
     start_time = omp_get_wtime();
@@ -176,8 +176,6 @@ void size_analysis(int n_cores)
     std::fstream fs;
     fs.open(ser_name, std::fstream::out | std::fstream::trunc);
     fs.close();
-
-    dims = {10, 100, 1000, 5000, 10000};
 
     int single_core = 1;
 
