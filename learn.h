@@ -55,14 +55,19 @@ void output_analysis(int dim, int n_cores, bool write_or_print, int max_steps)
                 // Each thread will perform output operations on a previously
                 // stored iteration of the grid
                 omp_set_num_threads(n_cores);
+
+                // if this is the last iteration and number of iterations is not a multiple
+                // of number of threads used, the for loop is restricted to the remainder
+                int end = n == max_steps - 1 && max_steps % n_cores != 0 ? ((n + 1) % n_cores) : n_cores;
+
 #pragma omp parallel for
-                for (int i = 0; i < n_cores; i++)
+                for (int i = 0; i < end; i++)
                 {
 
                     // Depending on option chosen, write grid
                     // to .dat, or print .bmp image
 
-                    grid_to_file(i + (n + 1) - n_cores, string_grids[i], dim, dim);
+                    grid_to_file(i + (n + 1) - end, string_grids[i], dim, dim);
                 }
                 // Restart counter
                 cnt = -1;
