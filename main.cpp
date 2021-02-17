@@ -50,8 +50,12 @@ int main(int argc, char **argv)
             int n_cores;
             std::cin >> n_cores;
 
+            std::cout << "How many iterations would you like to go through.\n";
+            int max_steps;
+            std::cin >> max_steps;
+
             std::cout << "Code running...\n";
-            output_analysis(dim, n_cores, write_or_print);
+            output_analysis(dim, n_cores, write_or_print, max_steps);
         }
 
         std::cout << "About the impact of grid size in the performance of the game (1=yes / 0=no)?\n";

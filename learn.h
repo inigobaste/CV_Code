@@ -20,12 +20,8 @@ double run_time, start_time;
 double total_time = 0.0;
 // This function produces execution time series when
 // providing output in parallel and serial cases
-void output_analysis(int dim, int n_cores, bool write_or_print)
+void output_analysis(int dim, int n_cores, bool write_or_print, int max_steps)
 {
-    // Number of generations in the game must be a multiple of
-    // the number of cores, due to the way output operations
-    // are parallelised
-    int max_steps = n_cores * 100;
 
     // Initialise file to write execution time for parallelised output
     std::string par_name;
@@ -50,8 +46,6 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
         for (int n = 0; n < max_steps; n++)
         {
             start_time = omp_get_wtime();
-            // Calculate next generation in the game
-            // grid.do_iteration();
 
             string_grids[cnt] = grid.data;
 
@@ -92,8 +86,6 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
 
         for (int n = 0; n < max_steps; n++)
         {
-            // Calculate next generation in the game
-            // grid.do_iteration();
             grid.to_file(n);
 
             // Record time at time-step
@@ -198,11 +190,10 @@ void size_analysis(int n_cores)
 
     std::vector<int> dims = {10, 100, 1000, 5000, 10000, 20000};
 
-    // Start clock
-    start_time = omp_get_wtime();
-
     for (int dim : dims)
     {
+        // Start clock
+        start_time = omp_get_wtime();
         // Create a random grid of different size for each iteration
         Grid grid = Grid(dim, dim, true, n_cores);
 
@@ -223,11 +214,10 @@ void size_analysis(int n_cores)
 
     int single_core = 1;
 
-    // Start clock
-    start_time = omp_get_wtime();
-
     for (int dim : dims)
     {
+        // Start clock
+        start_time = omp_get_wtime();
         // Generate random NxN grid
         Grid grid = Grid(dim, dim, false, single_core);
 
