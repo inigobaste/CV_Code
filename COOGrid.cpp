@@ -114,7 +114,7 @@ std::shared_ptr<Grid> COOGrid::COO_to_dense()
     }
     // TODO: set number of cores dynamically
     int n_cores = 1;
-    return std::make_shared<Grid>(this->nrows, this->ncols, false, n_cores);
+    return std::make_shared<Grid>(this->nrows, this->ncols, cells);
 }
 
 bool COOGrid::do_iteration_parallel()
