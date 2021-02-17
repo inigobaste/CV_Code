@@ -11,6 +11,7 @@
 #include "Grid.h"
 #include "COOGrid.h"
 #include "FileWriter.h"
+
 void play()
 {
     // Evaluate execution time for parallelised grids
@@ -113,6 +114,9 @@ void play()
         }
     }
 
+    std::cout << std::endl
+              << "Please wait." << std::endl;
+
     // Start clock
     start_time = omp_get_wtime();
 
@@ -192,4 +196,5 @@ void play()
         run_time = omp_get_wtime() - start_time;
         time_data_to_file(par_name, n, rows, cols, run_time);
     }
+    std::cout << "Execution complete. Your files are now available." << std::endl;
 }
