@@ -17,6 +17,7 @@
 // of different operations of the game and the impact of their parallelisation
 
 double run_time, start_time;
+double total_time = 0.0;
 // This function produces execution time series when
 // providing output in parallel and serial cases
 void output_analysis(int dim, int n_cores, bool write_or_print)
@@ -24,7 +25,7 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
     // Number of generations in the game must be a multiple of
     // the number of cores, due to the way output operations
     // are parallelised
-    int max_steps = n_cores * 800;
+    int max_steps = n_cores * 100;
 
     // Initialise file to write execution time for parallelised output
     std::string par_name;
@@ -39,20 +40,18 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
         Grid grid = Grid(dim, dim, true, n_cores);
 
         // save strings from previous n_cores iterations
-        std::vector<std::string> string_grids;
-
-        string_grids.resize(n_cores);
+        std::vector<std::string> string_grids(n_cores, "");
 
         // Counter initialised. Indicates iterations after last output
         int cnt = 0;
 
         // Start clock
-        start_time = omp_get_wtime();
 
         for (int n = 0; n < max_steps; n++)
         {
+            start_time = omp_get_wtime();
             // Calculate next generation in the game
-            grid.do_iteration();
+            // grid.do_iteration();
 
             string_grids[cnt] = grid.data;
 
@@ -76,7 +75,8 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
             }
             // Record time at time-step
             run_time = omp_get_wtime() - start_time;
-            time_data_to_file(par_name, n, dim, dim, run_time);
+            total_time += run_time;
+            time_data_to_file(par_name, n, dim, dim, total_time);
             cnt++;
         }
 
@@ -93,7 +93,7 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
         for (int n = 0; n < max_steps; n++)
         {
             // Calculate next generation in the game
-            grid.do_iteration();
+            // grid.do_iteration();
             grid.to_file(n);
 
             // Record time at time-step
@@ -115,17 +115,16 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
         // Vectors containing n_cores number of grids
         // from previous iterations get initialised
         std::vector<bool> store_grids;
-
         store_grids.resize(grid.cells.size() * n_cores);
 
         // Counter initialised. Indicates iterations after last output
         int cnt = 0;
 
         // Start clock
-        start_time = omp_get_wtime();
 
         for (int n = 0; n < max_steps; n++)
         {
+            start_time = omp_get_wtime();
             // Calculate next generation in the game
             grid.do_iteration();
 
@@ -147,7 +146,6 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
 #pragma omp parallel for
                 for (int i = 0; i < n_cores; i++)
                 {
-
                     // Each thread takes one grid from a previous iteration
                     vector<bool>::const_iterator first = store_grids.begin() + i * grid.cells.size();
                     vector<bool>::const_iterator last = store_grids.begin() + (i + 1) * grid.cells.size();
@@ -159,7 +157,8 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
             }
             // Record time at time-step
             run_time = omp_get_wtime() - start_time;
-            time_data_to_file(par_name, n, dim, dim, run_time);
+            total_time += run_time;
+            time_data_to_file(par_name, n, dim, dim, total_time);
             cnt++;
         }
 
