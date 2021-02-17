@@ -103,16 +103,16 @@ void play()
             }
 
             int choose_output;
-            std::cout << "Would you like to print(0), write(1) or both(2)?\n";
+            std::cout << "Would you like to write data(0), print images(1) or both(2)?\n";
             std::cin >> choose_output;
 
             if (choose_output == 0)
             {
-                print = true;
+                write = true;
             }
             else if (choose_output == 1)
             {
-                write = true;
+                print = true;
             }
             else
             {
