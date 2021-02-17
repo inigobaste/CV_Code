@@ -20,12 +20,8 @@ double run_time, start_time;
 double total_time = 0.0;
 // This function produces execution time series when
 // providing output in parallel and serial cases
-void output_analysis(int dim, int n_cores, bool write_or_print)
+void output_analysis(int dim, int n_cores, bool write_or_print, int max_steps)
 {
-    // Number of generations in the game must be a multiple of
-    // the number of cores, due to the way output operations
-    // are parallelised
-    int max_steps = n_cores * 100;
 
     // Initialise file to write execution time for parallelised output
     std::string par_name;
@@ -50,8 +46,6 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
         for (int n = 0; n < max_steps; n++)
         {
             start_time = omp_get_wtime();
-            // Calculate next generation in the game
-            // grid.do_iteration();
 
             string_grids[cnt] = grid.data;
 
@@ -92,8 +86,6 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
 
         for (int n = 0; n < max_steps; n++)
         {
-            // Calculate next generation in the game
-            // grid.do_iteration();
             grid.to_file(n);
 
             // Record time at time-step
@@ -125,8 +117,6 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
         for (int n = 0; n < max_steps; n++)
         {
             start_time = omp_get_wtime();
-            // Calculate next generation in the game
-            grid.do_iteration();
 
             // Assign grid of current iteration to vector of
             // previous iterations
@@ -175,7 +165,6 @@ void output_analysis(int dim, int n_cores, bool write_or_print)
         for (int n = 0; n < max_steps; n++)
         {
             // Calculate next generation in the game
-            grid.do_iteration();
             print_IMG(grid.cells, dim, dim, n);
 
             // Record time at time-step
@@ -198,11 +187,10 @@ void size_analysis(int n_cores)
 
     std::vector<int> dims = {10, 100, 1000, 5000, 10000, 20000};
 
-    // Start clock
-    start_time = omp_get_wtime();
-
     for (int dim : dims)
     {
+        // Start clock
+        start_time = omp_get_wtime();
         // Create a random grid of different size for each iteration
         Grid grid = Grid(dim, dim, true, n_cores);
 
@@ -223,11 +211,10 @@ void size_analysis(int n_cores)
 
     int single_core = 1;
 
-    // Start clock
-    start_time = omp_get_wtime();
-
     for (int dim : dims)
     {
+        // Start clock
+        start_time = omp_get_wtime();
         // Generate random NxN grid
         Grid grid = Grid(dim, dim, false, single_core);
 
@@ -237,6 +224,57 @@ void size_analysis(int n_cores)
         // Record time at time-step
         run_time = omp_get_wtime() - start_time;
         time_data_to_file(ser_name, 1, dim, dim, run_time);
+    }
+}
+
+// This function produces execution time series when
+// for different sizes of serialised and parallelised
+// grids
+void iterations_analysis(int dim, int n_cores, int max_steps)
+{
+    // Evaluate execution time for parallelised grids
+    std::string par_name = "parallel_its_time.dat";
+    std::fstream fp;
+    fp.open(par_name, std::fstream::out | std::fstream::trunc);
+    fp.close();
+
+    Grid grid = Grid(dim, dim, true, n_cores);
+
+    // Start clock
+    start_time = omp_get_wtime();
+
+    for (int n = 0; n < max_steps; n++)
+    {
+        // Calculate next generation in the game
+        grid.do_iteration();
+
+        // Record time at time-step
+        run_time = omp_get_wtime() - start_time;
+        time_data_to_file(par_name, n, dim, dim, run_time);
+    }
+
+    // Evaluate execution time for serialised grids
+    std::string ser_name = "serial_its_time.dat";
+
+    std::fstream fs;
+    fs.open(ser_name, std::fstream::out | std::fstream::trunc);
+    fs.close();
+
+    int single_core = 1;
+    Grid grid2 = Grid(dim, dim, false, n_cores);
+
+    // Start clock
+    start_time = omp_get_wtime();
+
+    for (int n = 0; n < max_steps; n++)
+    {
+
+        // Calculate next generation in the game
+        grid2.do_iteration();
+
+        // Record time at time-step
+        run_time = omp_get_wtime() - start_time;
+        time_data_to_file(ser_name, n, dim, dim, run_time);
     }
 }
 
