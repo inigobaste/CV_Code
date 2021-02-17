@@ -1,6 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 #include "Grid.h"
+#include "COOGrid.h"
 #include <vector>
 
 TEST_CASE("test the first iteration of the game of life")
@@ -20,9 +21,15 @@ TEST_CASE("test the first iteration of the game of life")
     Grid grid = Grid(5, 6, input);
     grid.do_iteration();
 
+    Grid grid_COO = Grid(5, 6, input);
+    std::shared_ptr<COOGrid> sparse_grid = grid_COO.dense_to_COO();
+    sparse_grid->do_iteration_serial();
+    std::shared_ptr<Grid> output_grid = sparse_grid->COO_to_dense();
+
     for (int i = 0; i < 30; i++)
     {
         CHECK(grid.cells[i] == expected[i]);
+        CHECK(output_grid->cells[i] == expected[i]);
     }
 }
 
@@ -54,6 +61,11 @@ TEST_CASE("test iteration for 10x10 grid")
     Grid grid = Grid(size, size, input);
     grid.do_iteration();
 
+    Grid grid_COO = Grid(size, size, input);
+    std::shared_ptr<COOGrid> sparse_grid = grid_COO.dense_to_COO();
+    sparse_grid->do_iteration_serial();
+    std::shared_ptr<Grid> output_grid = sparse_grid->COO_to_dense();
+
     for (int i = 0; i < size * size; i++)
     {
         if (grid.cells[i] != expected[i])
@@ -61,6 +73,16 @@ TEST_CASE("test iteration for 10x10 grid")
             std::cout << i << std::endl;
         }
         CHECK(grid.cells[i] == expected[i]);
+    }
+
+    for (int i = 0; i < size * size; i++)
+    {
+        
+        if (output_grid->cells[i] != expected[i])
+        {
+            std::cout << i << std::endl;
+        }
+        CHECK(output_grid->cells[i] == expected[i]);
     }
 }
 
