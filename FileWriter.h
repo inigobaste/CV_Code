@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <stdio.h>
+#include <string>
 #include "Grid.h"
 
 using namespace std;
@@ -90,7 +91,7 @@ void writeGridImageFile(const std::vector<bool> &grid, std::string filename, int
     delete[] img;
 }
 
-void grid_to_file(int it, std::vector<bool> grid_input, int rows, int cols)
+void grid_to_file(int it, std::string grid_string, int rows, int cols)
 {
     std::stringstream fname;
     std::fstream f1;
@@ -100,12 +101,7 @@ void grid_to_file(int it, std::vector<bool> grid_input, int rows, int cols)
 
     f1.open(fname.str().c_str(), std::ios_base::out);
 
-    for (int i = 0; i < rows; i++)
-    {
-        for (int j = 0; j < cols; j++)
-            f1 << grid_input[i * cols + j] << "\t";
-        f1 << "\n";
-    }
+    f1 << grid_string;
     f1.close();
 }
 

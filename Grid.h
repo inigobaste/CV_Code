@@ -14,13 +14,13 @@ private:
     bool parallel = true;
     int cores = 1;
 
-    std::string data = "";
     std::string new_data = "";
 
     bool do_iteration_parallel();
     bool do_iteration_serial();
 
 public:
+    std::string data = "";
     std::vector<bool> cells;
     std::vector<bool> new_cells;
 
