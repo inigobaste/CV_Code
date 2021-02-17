@@ -12,6 +12,7 @@
 #include "COOGrid.h"
 #include "FileWriter.h"
 
+
 // This file prompts the user to give input, so they can make some adjustments
 // to the game in terms of grid characteristics and output of game iterations
 void play()
@@ -30,7 +31,7 @@ void play()
     int cols;
     std::cin >> cols;
 
-    std::cout << "How many cores would you like to use?\n";
+    std::cout << "How many cores would you like to use? Please enter a number less than or equal to the number of logical cores in your CPU.\n";
     int n_cores;
     std::cin >> n_cores;
 
@@ -49,7 +50,10 @@ void play()
     std::vector<bool> store_grids;
     std::vector<int> output_its;
     int cnt;
-    bool print, write, both, all_its;
+    bool print = false;
+    bool write = false;
+    bool both = false;
+    bool all_its = false;
 
     if (write_or_print)
     {
@@ -59,7 +63,7 @@ void play()
         {
             cnt = 0;
             int choose_output;
-            std::cout << "Would you like to print(0), write(1) or both(2)?\n";
+            std::cout << "Would you like to print data(0), write images(1) or both(2)?\n";
             std::cin >> choose_output;
 
             // Set booleans for different output options
@@ -123,8 +127,7 @@ void play()
             }
         }
     }
-
-    std::cout << "Code running...\n";
+    std::cout << "Please wait...\n";
 
     // Start clock
     start_time = omp_get_wtime();
@@ -211,4 +214,5 @@ void play()
         run_time = omp_get_wtime() - start_time;
         time_data_to_file(par_name, n, rows, cols, run_time);
     }
+    std::cout << "Execution complete. Your files are now available." << std::endl;
 }

@@ -24,7 +24,7 @@ int main(int argc, char **argv)
     context.run();
 
     bool learn_or_play;
-    std::cout << "Would you like to play or to learn (0 or 1)\n";
+    std::cout << "Would you like to play or to learn (0=play or 1=learn)\n";
     std::cin >> learn_or_play;
     std::cout << "\n";
 
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
             int dim;
             std::cin >> dim;
 
-            std::cout << "How many cores would you like to use?\n";
+            std::cout << "How many cores would you like to use? Please enter a number less than or equal to the number of logical cores in your CPU.\n";
             int n_cores;
             std::cin >> n_cores;
 
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
         std::cout << "\n";
         if (grid_size)
         {
-            std::cout << "How many cores would you like to use?\n";
+            std::cout << "How many cores would you like to use? Please enter a number less than or equal to the number of logical cores in your CPU.\n";
             int n_cores;
             std::cin >> n_cores;
             std::cout << "Code running...\n";
