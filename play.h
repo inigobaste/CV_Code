@@ -204,7 +204,7 @@ void play()
                 omp_set_num_threads(n_cores);
 
                 // if this is the last iteration, only loop through part of array
-                int end = isLast ? ((n + 1) % n_cores) : n_cores;
+                int end = isLast && (n + 1) % n_cores != 0 ? ((n + 1) % n_cores) : n_cores;
 
 #pragma omp parallel for
                 for (int i = 0; i < end; i++)
