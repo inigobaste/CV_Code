@@ -46,13 +46,13 @@ int main(int argc, char **argv)
             int dim;
             std::cin >> dim;
 
-            std::cout << "How many cores would you like to use? Please enter a number less than or equal to the number of logical cores in your CPU.\n";
-            int n_cores;
-            std::cin >> n_cores;
-
             std::cout << "How many iterations would you like to go through.\n";
             int max_steps;
             std::cin >> max_steps;
+
+            std::cout << "How many cores would you like to use? Please enter a number less than or equal to the number of logical cores in your CPU.\n";
+            int n_cores;
+            std::cin >> n_cores;
 
             std::cout << "Code running...\n";
             output_analysis(dim, n_cores, write_or_print, max_steps);
@@ -70,6 +70,28 @@ int main(int argc, char **argv)
             std::cout << "Code running...\n";
             size_analysis(n_cores);
         }
+
+        std::cout << "About the impact of increasing generations of the game (1=yes / 0=no)?\n";
+        bool its;
+        std::cin >> its;
+        std::cout << "\n";
+        if (its)
+        {
+            std::cout << "What N would you like in NxN grid?\n";
+            int dim;
+            std::cin >> dim;
+
+            std::cout << "How many iterations would you like to go through.\n";
+            int max_steps;
+            std::cin >> max_steps;
+
+            std::cout << "How many cores would you like to use? Please enter a number less than or equal to the number of logical cores in your CPU.\n";
+            int n_cores;
+            std::cin >> n_cores;
+            std::cout << "Code running...\n";
+            iterations_analysis(dim, n_cores, max_steps);
+        }
+
 
         std::cout << "About the impact of the number of cores in the overall performance of the code (1=yes / 0=no)?\n";
         bool cores;
