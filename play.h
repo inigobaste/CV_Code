@@ -28,7 +28,7 @@ void play()
     int cols;
     std::cin >> cols;
 
-    std::cout << "How many cores would you like to use?\n";
+    std::cout << "How many cores would you like to use? Please enter a number less than or equal to the number of logical cores in your CPU.\n";
     int n_cores;
     std::cin >> n_cores;
 
@@ -60,7 +60,7 @@ void play()
         {
             cnt = 0;
             int choose_output;
-            std::cout << "Would you like to print(0), write(1) or both(2)?\n";
+            std::cout << "Would you like to print data(0), write images(1) or both(2)?\n";
             std::cin >> choose_output;
 
             if (choose_output == 0)
