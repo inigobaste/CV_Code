@@ -55,7 +55,7 @@ A sparse equivalent of `Grid` using coordinate list (COO) storage.
 `do_iteration_parallel`: compute next generation of the grid cell states in parallel
 `COO_to_dense`: shared pointer, converts `COOGrid` object to `Grid` object
 
-## Testing
+## Testing
 
 As a test framework, we are using [doctest](https://github.com/onqtam/doctest), chosen because it's lightweight and doesn't have a huge impact on compile or run times. The doctest header is included in `./doctest.h` and tests should be added in `./tests.cpp`.
 
@@ -65,8 +65,11 @@ The tests are executed for the `Grid` method `do_iteration` and the `COOGrid` me
 
 ### Tests
 1 - First Iteration for "Block" Creation: 5x6 grid forming a "block" after first iteration
+
 2 - Test for 10x10 Grid: Elementwise accuracy check for an iteration over a 10x10 grid
+
 3 - Steady State Check: Iterates twice over the first test's input to check if steady state is achieved (since the "block" does not change)
+
 4 - Generation Counter Check: Tests accuracy of `generation` (for `Grid` method `do_iteration` only)
 
 
