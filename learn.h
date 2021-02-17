@@ -143,7 +143,7 @@ void output_analysis(int dim, int n_cores, bool write_or_print, int max_steps)
                 // stored iteration of the grid
                 omp_set_num_threads(n_cores);
 #pragma omp parallel for
-                for (int i = 0; i < n_cores; i++)
+                for (int i = 0; i < end; i++)
                 {
                     // Each thread takes one grid from a previous iteration
                     vector<bool>::const_iterator first = store_grids.begin() + i * grid.cells.size();
