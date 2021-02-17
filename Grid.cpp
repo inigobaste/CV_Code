@@ -84,16 +84,8 @@ void Grid::to_file(const int &it)
 }
 
 // return value indicates whether the game has reached steady state
-bool Grid::do_iteration_parallel()
+bool Grid::do_iteration_parallel(bool iterate_string)
 {
-
-    omp_set_num_threads(this->cores);
-#pragma omp parallel for
-    for (int i = 0; i < this->cells.size(); i++)
-    {
-        this->new_cells[i] = this->cells[i];
-    }
-
     omp_set_num_threads(this->cores);
 #pragma omp parallel for
     for (int i = 0; i < this->nrows; i++)
@@ -116,26 +108,35 @@ bool Grid::do_iteration_parallel()
                 this->new_cells[i * this->ncols + j] = false;
             }
 
-            // a string for the 0 or 1 followed by a tab
-            std::string string_bool = this->new_cells[i * this->ncols + j] ? "1" : "0";
-            std::string replacement = string_bool + "\t";
+            if (iterate_string)
+            {
+                // a string for the 0 or 1 followed by a tab
+                std::string string_bool = this->new_cells[i * this->ncols + j] ? "1" : "0";
+                std::string replacement = string_bool + "\t";
 
-            // index at which the 'replacement' string will be inserted
-            string_index = (i * this->ncols + j) * 2 + i;
+                // index at which the 'replacement' string will be inserted
+                string_index = (i * this->ncols + j) * 2 + i;
 
-            this->new_data.replace(string_index, replacement.size(), replacement);
+                this->new_data.replace(string_index, replacement.size(), replacement);
+            }
         }
 
-        // each row needs to be followed by a newline character
-        std::string endLine = "\n";
-        this->new_data.replace((i + 1) * this->ncols * 2 + i, endLine.size(), endLine);
+        if (iterate_string)
+        {
+            // each row needs to be followed by a newline character
+            std::string endLine = "\n";
+            this->new_data.replace((i + 1) * this->ncols * 2 + i, endLine.size(), endLine);
+        }
     }
 
     // threading ends here
     this->cells.swap(this->new_cells);
 
-    // save in data variable, so it can be retained when new_data is altered
-    this->data = this->new_data;
+    if (iterate_string)
+    {
+        // save in data variable, so it can be retained when new_data is altered
+        this->data = this->new_data;
+    }
 
     // return true if the iteration has reached steady state
     if (this->cells.size() != this->new_cells.size())
@@ -153,15 +154,11 @@ bool Grid::do_iteration_parallel()
     return true;
 }
 
-bool Grid::do_iteration_serial()
+bool Grid::do_iteration_serial(bool iterate_string)
 {
-    for (int i = 0; i < this->cells.size(); i++)
-    {
-        this->new_cells[i] = this->cells[i];
-    }
-
     for (int i = 0; i < this->nrows; i++)
     {
+        int string_index = 0;
 
         for (int j = 0; j < this->ncols; j++)
         {
@@ -179,11 +176,35 @@ bool Grid::do_iteration_serial()
 
                 this->new_cells[i * this->ncols + j] = false;
             }
+
+            if (iterate_string)
+            {
+                // a string for the 0 or 1 followed by a tab
+                std::string string_bool = this->new_cells[i * this->ncols + j] ? "1" : "0";
+                std::string replacement = string_bool + "\t";
+
+                // index at which the 'replacement' string will be inserted
+                string_index = (i * this->ncols + j) * 2 + i;
+
+                this->new_data.replace(string_index, replacement.size(), replacement);
+            }
+        }
+        if (iterate_string)
+        {
+            // each row needs to be followed by a newline character
+            std::string endLine = "\n";
+            this->new_data.replace((i + 1) * this->ncols * 2 + i, endLine.size(), endLine);
         }
     }
 
     // threading ends here
     this->cells.swap(this->new_cells);
+
+    if (iterate_string)
+    {
+        // save in data variable, so it can be retained when new_data is altered
+        this->data = this->new_data;
+    }
 
     // return true if the iteration has reached steady state
     if (this->cells.size() != this->new_cells.size())
@@ -201,17 +222,17 @@ bool Grid::do_iteration_serial()
     return true;
 }
 
-bool Grid::do_iteration()
+bool Grid::do_iteration(bool iterate_string)
 {
     generation++;
 
     if (this->parallel)
     {
-        return this->do_iteration_parallel();
+        return this->do_iteration_parallel(iterate_string);
     }
     else
     {
-        return this->do_iteration_serial();
+        return this->do_iteration_serial(iterate_string);
     };
 }
 
