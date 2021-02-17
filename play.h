@@ -138,7 +138,10 @@ void play()
     for (int n = 0; n < its; n++)
     {
         // Calculate next generation in the game
-        grid.do_iteration();
+        bool steady_state = grid.do_iteration();
+
+        // if this is the last iteration OR steady state has been reached
+        bool isLast = n == its - 1 || steady_state;
 
         // Perform output operations at selected iterations
         if (output_its.size() > 0)
@@ -205,7 +208,8 @@ void play()
                 // stored iteration of the grid
                 omp_set_num_threads(n_cores);
 #pragma omp parallel for
-                for (int i = 0; i < n_cores; i++)
+                // if this is the last iteration, only loop through part of array
+                for (int i = 0; i < isLast ? ((n + 1) % n_cores) : n_cores; i++)
                 {
 
                     // Depending on option chosen, write grid
@@ -239,6 +243,10 @@ void play()
         // Record time at time-step
         run_time = omp_get_wtime() - start_time;
         time_data_to_file(par_name, n, rows, cols, run_time);
+        if (isLast)
+        {
+            break;
+        }
     }
     std::cout << "Execution complete. Your files are now available." << std::endl;
 }
