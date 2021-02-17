@@ -8,8 +8,7 @@
 #include <map>
 #include <memory>
 
-// constructor with x and y values passed in
-// TODO: change this so it doesn't copy the vectors
+// constructor with x and y values passed in as std::vector<std::pair<int, int>> ij
 COOGrid::COOGrid(const int &num_rows, const int &num_cols, std::vector<std::pair<int, int>> ij, bool is_parallel) : nrows(num_rows), ncols(num_cols), coords(ij), parallel(is_parallel)
 {
 }
@@ -18,6 +17,8 @@ COOGrid::~COOGrid()
 {
 }
 
+// compute next generation of the grid cell states in serial
+// Return: true if steady state has been reached, false otherwise
 bool COOGrid::do_iteration_serial()
 {
     std::map<std::pair<int, int>, int> indexMap; // counts repetitions of coords as value
@@ -66,9 +67,9 @@ bool COOGrid::do_iteration_serial()
     }
 
     //A SPARSITY CALCULATOR
-    float sparsity;
-    sparsity = nnzs / (float)(this->nrows * this->ncols);
-    std::cout << "Sparsity = " << sparsity << "\n";
+    //float sparsity;
+    //sparsity = nnzs / (float)(this->nrows * this->ncols);
+    //std::cout << "Sparsity = " << sparsity << "\n";
 
     // any coordinates that fulfill the criteria are added to a new array;
     for (std::map<std::pair<int, int>, int>::iterator it = indexMap.begin(); it != indexMap.end(); it++)
@@ -91,7 +92,7 @@ bool COOGrid::do_iteration_serial()
         new_coords.clear();
         return false;
     }
-    // #pragma omp parallel for
+    
     for (int i = 0; i < coords.size(); i++)
     {
         if ((coords[i].first != new_coords[i].first) || (coords[i].second != new_coords[i].second))
@@ -104,7 +105,7 @@ bool COOGrid::do_iteration_serial()
     return true;
 }
 
-// convert to dense storage system
+// shared pointer, converts COOGrid object to Grid object
 std::shared_ptr<Grid> COOGrid::COO_to_dense()
 {
     std::vector<bool> cells((this->nrows * this->ncols), false); // clear the vector
@@ -114,9 +115,12 @@ std::shared_ptr<Grid> COOGrid::COO_to_dense()
     }
     // TODO: set number of cores dynamically
     int n_cores = 1;
+    // use the Grid(const int &num_rows, const int &num_cols, std::vector<bool> &cell_states, bool is_parallel) constructor
     return std::make_shared<Grid>(this->nrows, this->ncols, cells);
 }
 
+// compute next generation of the grid cell states in parallel
+// Return: true if steady state has been reached, false otherwise
 bool COOGrid::do_iteration_parallel()
 {
     std::map<std::pair<int, int>, int> indexMap; // counts repetitions of coords as value
