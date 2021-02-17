@@ -12,9 +12,12 @@
 #include "COOGrid.h"
 #include "FileWriter.h"
 
+
+// This file prompts the user to give input, so they can make some adjustments
+// to the game in terms of grid characteristics and output of game iterations
 void play()
 {
-    // Evaluate execution time for parallelised grids
+    // Initialise file to write execution time for parallelised grids
     std::string par_name = "parallel_time.dat";
     std::fstream fp;
     fp.open(par_name, std::fstream::out | std::fstream::trunc);
@@ -36,10 +39,10 @@ void play()
     int its;
     std::cin >> its;
 
-    // create a random grid
+    // Create a random grid
     Grid grid = Grid(rows, cols, true, n_cores);
 
-    std::cout << "Would you like to write the data or print images of the grid (1 yes or 0 no)?\n";
+    std::cout << "Would you like some kind of output (1 yes or 0 no)?\n";
     bool write_or_print;
     std::cin >> write_or_print;
 
@@ -54,7 +57,7 @@ void play()
 
     if (write_or_print)
     {
-        std::cout << "At every iteration (1 yes or 0 no)?\n";
+        std::cout << "For every iteration (1 yes or 0 no)?\n";
         std::cin >> all_its;
         if (all_its)
         {
@@ -63,6 +66,7 @@ void play()
             std::cout << "Would you like to print data(0), write images(1) or both(2)?\n";
             std::cin >> choose_output;
 
+            // Set booleans for different output options
             if (choose_output == 0)
             {
                 print = true;
@@ -76,18 +80,25 @@ void play()
                 both = true;
             }
 
+            // Because of the particular way in which we have decided to parallelise our output
+            // (image printing and file writing), where printing occurs every n_core number of
+            // iterations occur, the number of iterations must be a multiple of the number of cores used.
             while (its % n_cores != 0)
             {
                 std::cout << "Number of iterations for the game must be a multiple of the number of cores used!\n";
                 std::cout << "Provide number of iterations\n";
                 std::cin >> its;
             }
+            // Vector containing n_cores number of grids
+            // from previous iterations gets initialised
+            store_grids.resize(grid.cells.size() * n_cores);
         }
         else if (all_its == false)
         {
+            // Decide iterations for which output is produced
             bool add_it = true;
             int choose_its;
-            std::cout << "At which iterations?\n";
+            std::cout << "For which iterations?\n";
             while (add_it)
             {
                 std::cout << "Add iteration\n";
@@ -116,9 +127,7 @@ void play()
             }
         }
     }
-
-    std::cout << std::endl
-              << "Please wait." << std::endl;
+    std::cout << "Please wait...\n";
 
     // Start clock
     start_time = omp_get_wtime();
@@ -135,6 +144,8 @@ void play()
             {
                 if (i == n)
                 {
+                    // Depending on option chosen, write grid
+                    // to .dat, print .bmp image, or both
                     if (write)
                     {
                         grid_to_file(n, grid.cells, rows, cols);
@@ -155,8 +166,8 @@ void play()
         // Perform output operations for all iterations
         if (all_its)
         {
-            store_grids.resize(grid.cells.size() * n_cores);
-
+            // Assign grid of current iteration to vector of
+            // previous iterations
             omp_set_num_threads(n_cores);
 #pragma omp parallel for
             for (int i = cnt * grid.cells.size(); i < ((cnt + 1) * grid.cells.size()); i++)
@@ -167,6 +178,8 @@ void play()
             // Every number of iterations equal to the number of cores used
             if ((n + 1) % n_cores == 0)
             {
+                // Each thread will perform output operations on a previously
+                // stored iteration of the grid
                 omp_set_num_threads(n_cores);
 #pragma omp parallel for
                 for (int i = 0; i < n_cores; i++)
@@ -175,6 +188,8 @@ void play()
                     vector<bool>::const_iterator last = store_grids.begin() + (i + 1) * grid.cells.size();
                     vector<bool> v(first, last);
 
+                    // Depending on option chosen, write grid
+                    // to .dat, print .bmp image, or both
                     if (write)
                     {
                         grid_to_file(i + (n + 1) - n_cores, v, rows, cols);
@@ -189,8 +204,8 @@ void play()
                         print_IMG(v, rows, cols, i + (n + 1) - n_cores);
                     }
                 }
+                // Restart counter
                 cnt = -1;
-                store_grids.clear();
             }
             cnt++;
         }
