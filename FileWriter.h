@@ -108,8 +108,8 @@ void grid_to_file(int it, std::string grid_string, int rows, int cols)
 void print_IMG(std::vector<bool> grid_input, int rows, int cols, int it)
 {
     std::stringstream fname;
-    fname << "IMG"
-          << "_" << it << ".bmp";
+    fname << "ParallelPanicking_gen-"
+          << it << "_" << rows << "x" << cols << ".bmp";
     writeGridImageFile(grid_input, fname.str(), rows, cols);
 }
 
