@@ -27,19 +27,19 @@ A dense storage system for the game of life.
 
 #### Methods
 
-`num_neighbours`: returns the number of alive neighbours of a cell
+* `num_neighbours`: returns the number of alive neighbours of a cell
 
-`to_file`: creates a `.dat` file of 0's and 1's representing the states of the cells
+* `to_file`: creates a `.dat` file of 0's and 1's representing the states of the cells
 
-`do_iteration`: compute next generation of the grid cell states, either in serial or parallel
+* `do_iteration`: compute next generation of the grid cell states, either in serial or parallel
 
-`do_iteration_serial`: compute next generation of the grid cell states in serial
+* `do_iteration_serial`: compute next generation of the grid cell states in serial
 
-`do_iteration_parallel`: compute next generation of the grid cell states in parallel
+* `do_iteration_parallel`: compute next generation of the grid cell states in parallel
 
-`time_data_to_file`: writes timings to .dat file
+* `time_data_to_file`: writes timings to .dat file
 
-`dense_to_COO`: shared pointer, converts `Grid` object to `COOGrid` object
+* `dense_to_COO`: shared pointer, converts `Grid` object to `COOGrid` object
 
 ### COOGrid
 
@@ -57,11 +57,11 @@ A sparse equivalent of `Grid` using coordinate list (COO) storage.
 
 #### Methods
 
-`do_iteration_serial`: compute next generation of the grid cell states in serial
+* `do_iteration_serial`: compute next generation of the grid cell states in serial
 
-`do_iteration_parallel`: compute next generation of the grid cell states in parallel
+* `do_iteration_parallel`: compute next generation of the grid cell states in parallel
 
-`COO_to_dense`: shared pointer, converts `COOGrid` object to `Grid` object
+* `COO_to_dense`: shared pointer, converts `COOGrid` object to `Grid` object
 
 ## Testing
 
@@ -79,6 +79,11 @@ The tests are executed for the `Grid` method `do_iteration` and the `COOGrid` me
 3 - Steady State Check: Iterates twice over the first test's input to check if steady state is achieved (since the "block" does not change)
 
 4 - Generation Counter Check: Tests accuracy of `generation` (for `Grid` method `do_iteration` only)
+
+## Why COO Storage?
+
+![Test Image 1](https://github.com/acse-2020/group-project-parallel-panicking/blob/main/Screen%20Shot%202021-02-17%20at%2018.27.36.png)
+![Test Image 1](https://github.com/acse-2020/group-project-parallel-panicking/blob/main/Screen%20Shot%202021-02-17%20at%2018.27.48.png)
 
 
 ## License
