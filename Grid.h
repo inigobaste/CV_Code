@@ -24,6 +24,8 @@ public:
     std::vector<bool> cells;
     std::vector<bool> new_cells;
 
+    int generation = 0;
+
     Grid(const int &num_rows, const int &num_cols, bool is_parallel, int &n_cores);
     Grid(const int &num_rows, const int &num_cols, std::vector<bool> &cell_states, bool is_parallel = true);
 

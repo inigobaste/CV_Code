@@ -203,6 +203,8 @@ bool Grid::do_iteration_serial()
 
 bool Grid::do_iteration()
 {
+    generation++;
+
     if (this->parallel)
     {
         return this->do_iteration_parallel();
